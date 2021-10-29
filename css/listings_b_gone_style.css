@@ -1,0 +1,117 @@
+/*Remove all css within the extension's elements*/
+div#bGoneSearchBarContainer, div#bGoneSearchBarContainer * {
+    all: unset;
+    box-sizing: border-box;
+    background-color: rgb(22, 32, 45);
+}
+
+/*Input fields and buttons containers*/
+div#bGoneSearchBarContainer > div.bGoneInputContainer {
+    align-items: stretch;
+    display: flex;
+    padding: 10px;
+}
+
+  /*Search bar button and select elements*/
+button#bGoneSearchBarButton, select#priceInputSelector {
+    align-content: center !important;
+    background-image: linear-gradient(rgb(132, 187, 60), rgb(81, 113, 36));
+    color: white;
+    padding: 10px;
+    height: 35px;
+    width: 80px;
+}
+
+button#bGoneSearchBarButton:hover, select#priceInputSelector:hover {
+    background-image: linear-gradient(rgb(96, 135, 44), rgb(63, 89, 28));
+}
+
+button#bGoneSearchBarButton:active, select#priceInputSelector:active {
+    background-image: none;
+    background-color: rgb(181, 216, 137) !important;
+}
+  /*Search bar input fields*/
+div#bGoneSearchBarContainer > div.bGoneInputContainer > input.bGoneInputField {
+    background-color: rgb(50, 73, 101);
+    color: white;
+    flex-grow: 1;
+    height: 35px;
+}
+
+div#bGoneSearchBarContainer > div.bGoneInputContainer > input.bGoneInputField:focus {
+    background-color: rgba(73, 108, 149, 0.7) !important;
+    border: 1px solid white;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    border-right: none;
+    transition: 500ms;
+}
+
+div#bGoneSearchBarContainer > div.bGoneInputContainer > input.bGoneInputField#bGoneQuantityInput:focus{
+    border: 1px solid white;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+div#bGoneSearchBarContainer > div.bGoneInputContainer > input.bGoneInputField:hover:not(:focus) {
+    background-color: rgba(73, 108, 149, 0.7) !important;
+    transition: 200ms;
+}
+
+/*Select all extension elements*/
+  /*Container div*/
+div#bGoneSelectAllCheckBoxContainer {
+    background-color: rgb(22, 32, 45);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    display: flex;
+    flex-direction: row;
+    height: 40px;
+    justify-content: space-between;
+}
+
+label#bGoneSelectAllContainer {
+    background-color: rgb(14, 19, 27);
+    border-top-left-radius: 10px;
+    display: inline-block;
+    padding-top: 10px;
+    padding-right: 5px;
+}
+
+input[type=checkbox]#bGoneSelectAllCheckbox {
+    float: left;
+}
+
+div#bGoneSelectAllCheckBoxContainer > button#bGoneRemoveCheckedItems {
+    background-image: linear-gradient(rgb(132, 187, 60), rgb(81, 113, 36));
+    border: none;
+    border-top-right-radius: 10px;
+    color: white;
+    padding-top: 5px;
+}
+
+div#bGoneSelectAllCheckBoxContainer > button#bGoneRemoveCheckedItems:hover {
+    background-image: linear-gradient(rgb(96, 135, 44), rgb(63, 89, 28));
+}
+
+div#bGoneSelectAllCheckBoxContainer > button#bGoneRemoveCheckedItems:active {
+    background-image: none;
+    background-color: rgb(181, 216, 137);
+}
+
+button#bGoneRemoveCheckedItems > img {
+    float: left;
+}
+
+/*Listings' checkboxes*/
+div#tabContentsMyActiveMarketListingsRows > div > label.bGoneCheckboxContainer {
+    background-color: rgb(14, 19, 27);
+    border-radius: 8px;
+    float: left;
+    margin-top: 10px;
+    padding: 5px;
+}
+
+div#tabContentsMyActiveMarketListingsRows > div > label.bGoneCheckboxContainer > input[type=checkbox].bGoneCheckbox {
+    float: left;
+}

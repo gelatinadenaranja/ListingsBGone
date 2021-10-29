@@ -1,0 +1,35 @@
+{
+  "manifest_version": 2, 
+
+  "name": "Listings-B-Gone",
+
+  "version": "1.0",
+
+  "description": "Make de-listing Steam Community Market items a bazillion times easier with this simple extension.",
+
+  "permissions": ["*://*.steamcommunity.com/market"],
+
+  "content_scripts": [
+
+    {
+      "css": ["css/listings_b_gone_style.css"],
+
+      "js": ["js/scm_main_page_script.js"],
+
+      "matches": ["*://*.steamcommunity.com/market", "*://*.steamcommunity.com/market/"]
+    }
+  ],
+
+  "browser_action" : {
+
+    "default_icon": "images/place_holder_icon.png"
+
+  },
+
+  "icons": {
+
+    "32": "images/place_holder_icon.png"
+  },
+
+  "web_accessible_resources": ["images/remove_items_button_icon.png"]
+}
