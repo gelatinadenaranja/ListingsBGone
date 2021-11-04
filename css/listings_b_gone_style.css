@@ -13,7 +13,7 @@ div#bGoneSearchBarContainer > div.bGoneInputContainer {
 }
 
   /*Search bar button and select elements*/
-button#bGoneSearchBarButton, select#priceInputSelector {
+button#bGoneSearchBarButton, select#bGonePriceInputSelector {
     align-content: center !important;
     background-image: linear-gradient(rgb(132, 187, 60), rgb(81, 113, 36));
     color: white;
@@ -22,23 +22,23 @@ button#bGoneSearchBarButton, select#priceInputSelector {
     width: 80px;
 }
 
-button#bGoneSearchBarButton:hover, select#priceInputSelector:hover {
-    background-image: linear-gradient(rgb(96, 135, 44), rgb(63, 89, 28));
+button#bGoneSearchBarButton:hover, select#bGonePriceInputSelector:hover {
+    background-image: linear-gradient(hsl(86, 51%, 35%), rgb(63, 89, 28));
 }
 
-button#bGoneSearchBarButton:active, select#priceInputSelector:active {
+button#bGoneSearchBarButton:active, select#bGonePriceInputSelector:active {
     background-image: none;
     background-color: rgb(181, 216, 137) !important;
 }
   /*Search bar input fields*/
-div#bGoneSearchBarContainer > div.bGoneInputContainer > input.bGoneInputField {
+div#bGoneSearchBarContainer > div.bGoneInputContainer > input.bGoneInputBar {
     background-color: rgb(50, 73, 101);
     color: white;
     flex-grow: 1;
     height: 35px;
 }
 
-div#bGoneSearchBarContainer > div.bGoneInputContainer > input.bGoneInputField:focus {
+div#bGoneSearchBarContainer > div.bGoneInputContainer > input.bGoneInputBar:focus {
     background-color: rgba(73, 108, 149, 0.7) !important;
     border: 1px solid white;
     border-top-left-radius: 8px;
@@ -47,13 +47,13 @@ div#bGoneSearchBarContainer > div.bGoneInputContainer > input.bGoneInputField:fo
     transition: 500ms;
 }
 
-div#bGoneSearchBarContainer > div.bGoneInputContainer > input.bGoneInputField#bGoneQuantityInput:focus{
+div#bGoneSearchBarContainer > div.bGoneInputContainer > input.bGoneInputBar#bGoneQuantityInput:focus{
     border: 1px solid white;
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
 }
 
-div#bGoneSearchBarContainer > div.bGoneInputContainer > input.bGoneInputField:hover:not(:focus) {
+div#bGoneSearchBarContainer > div.bGoneInputContainer > input.bGoneInputBar:hover:not(:focus) {
     background-color: rgba(73, 108, 149, 0.7) !important;
     transition: 200ms;
 }
