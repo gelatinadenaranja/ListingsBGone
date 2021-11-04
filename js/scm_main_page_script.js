@@ -1,75 +1,31 @@
 //Check if there are active listings
-window.addEventListener("load", function isListingsElementAvailable() {
-    if(document.getElementById("tabContentsMyActiveMarketListingsRows")) {
+window.addEventListener('load', function isListingsElementAvailable() {
+    if(document.getElementById('tabContentsMyActiveMarketListingsRows')) {
         addExtensionElements();
     };
 });
 
-//Add checkboxes for active listings
-function addListingCheckboxes() { 
-    const listingRowElements = document.getElementById("tabContentsMyActiveMarketListingsRows").children;
-    for(let i = 0; i < listingRowElements.length; i++) {
-        let checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.className = "bGoneCheckbox";
-        document.createTextNode(checkbox);
+function addSelectAllCheckBoxContainer() {
+    //Add checkbox over active listings table for selecting all visible listings and a button to remove checked items.
+    const activeListingsTable = document.getElementById('tabContentsMyActiveMarketListingsTable');
 
-        let checkboxContainer = document.createElement("label");
-        checkboxContainer.name = "containedCheckbox";
-        checkboxContainer.className = "bGoneCheckboxContainer";
-        checkboxContainer.append(checkbox);
-        
-        listingRowElements[i].insertBefore(checkboxContainer, listingRowElements[i].firstElementChild);
-    };
-};
+    let selectAllCheckBoxContainer = document.createElement('div');
+    selectAllCheckBoxContainer.id = 'bGoneSelectAllCheckBoxContainer';
 
-function wereCheckboxesAdded() {
-    const listing = document.getElementById("tabContentsMyActiveMarketListingsRows").firstElementChild;
-
-    if(!(listing === null) && (listing.firstElementChild.className === "bGoneCheckboxContainer") && (listing.firstElementChild.tagName === "LABEL")) {
-        return true;
-    } else {
-        return false;
-    };
-};
-
-//Add the extension's elements
-function addExtensionElements() { 
-    addListingCheckboxes();
-
-    const listingsContainer = document.getElementById("tabContentsMyActiveMarketListingsRows");
-
-    const observerCallback = function(mutationList, listingsContainerObserver) {
-        for(const mutation of mutationList) {
-            if(mutation.type === "childList" && !wereCheckboxesAdded()) {
-                addListingCheckboxes();
-            };
-        };
-    };
-    const listingsContainerObserver = new MutationObserver(observerCallback);
-
-    listingsContainerObserver.observe(listingsContainer, {childList: true});
-
-    //Add checkbox over active listings table. Used for selecting all visible listings
-    const activeListingsTable = document.getElementById("tabContentsMyActiveMarketListingsTable");
-
-    let selectAllCheckBoxContainer = document.createElement("div");
-    selectAllCheckBoxContainer.id = "bGoneSelectAllCheckBoxContainer";
-
-    let selectAllContainer = document.createElement("label");
-    selectAllContainer.id = "bGoneSelectAllContainer";
-    selectAllContainer.textContent = "Select all shown listings";
+    let selectAllContainer = document.createElement('label');
+    selectAllContainer.id = 'bGoneSelectAllContainer';
+    selectAllContainer.textContent = 'Select all shown listings';
     selectAllCheckBoxContainer.append(selectAllContainer);
 
-    let selectAllCheckbox = document.createElement("input");
-    selectAllCheckbox.type = "checkbox";
-    selectAllCheckbox.id = "bGoneSelectAllCheckbox";
+    let selectAllCheckbox = document.createElement('input');
+    selectAllCheckbox.type = 'checkbox';
+    selectAllCheckbox.id = 'bGoneSelectAllCheckbox';
     selectAllCheckbox.onclick = function() {
-        const listingRowElements = document.getElementById("tabContentsMyActiveMarketListingsRows").children;
+        const listingRowElements = document.getElementById('tabContentsMyActiveMarketListingsRows').children;
         let bGoneCheckboxItems = [];
         
         for(let i = 0; i < listingRowElements.length; i++) {
-            bGoneCheckboxItems[i] = listingRowElements[i].querySelector("div.market_listing_row.market_recent_listing_row > label.bGoneCheckboxContainer > input[type=checkbox].bGoneCheckbox");
+            bGoneCheckboxItems[i] = listingRowElements[i].querySelector('div.market_listing_row.market_recent_listing_row > label.bGoneCheckboxContainer > input[type=checkbox].bGoneCheckbox');
         };
 
         if(this.checked){
@@ -84,64 +40,141 @@ function addExtensionElements() {
     };
     selectAllContainer.append(selectAllCheckbox);
 
-    let removeCheckedItems = document.createElement("button");
-    removeCheckedItems.id = "bGoneRemoveCheckedItems";
-    removeCheckedItems.textContent = "Remove checked items";
+    //----------------------------------------------------------------
+    let refreshListingsButton = document.createElement("button");
+    refreshListingsButton.text = "ola";
+    refreshListingsButton.onclick = refreshListings;
+    selectAllCheckBoxContainer.append(refreshListingsButton);
+
+    let removeCheckedItems = document.createElement('button');
+    removeCheckedItems.id = 'bGoneRemoveCheckedItems';
+    removeCheckedItems.textContent = 'Remove checked items';
     removeCheckedItems.onclick = function() {
-        const listingRowElements = document.getElementById("tabContentsMyActiveMarketListingsRows").children;
-        const querySelectorString = "div.market_listing_row.market_recent_listing_row > label.bGoneCheckboxContainer > input[type=checkbox].bGoneCheckbox:checked";
+        const listingRowElements = document.getElementById('tabContentsMyActiveMarketListingsRows').children;
+        const querySelectorString = 'div.market_listing_row.market_recent_listing_row > label.bGoneCheckboxContainer > input[type=checkbox].bGoneCheckbox:checked';
+        const selectAllCheckbox = document.getElementById("bGoneSelectAllCheckbox");
+        let visibleListings = getListingsPerPage();
 
         for(let i = 0; i < listingRowElements.length; i++) {
-            if(listingRowElements[i].querySelector(querySelectorString)) {
-                removeItemListing(getItemId(listingRowElements[i].id), listingRowElements[i].querySelector(querySelectorString));
+            if(listingRowElements[i].style.display !== 'none') {
+                if(listingRowElements[i].querySelector(querySelectorString)) {
+                    removeItemListing(getItemId(listingRowElements[i].id), listingRowElements[i].querySelector(querySelectorString));
+                    visibleListings--;
+                };
+            } else {
+                visibleListings--;
             };
         };
+
+        if(!visibleListings > 0) {
+            refreshListings();
+        };
+
+        selectAllCheckbox.checked = false;
     };
     selectAllCheckBoxContainer.append(removeCheckedItems);
 
-    let removeCheckedItemsIcon = document.createElement("img");
+    let removeCheckedItemsIcon = document.createElement('img');
     removeCheckedItemsIcon.src = 'chrome-extension://pagdlobfoanbkfbddkkeohbahhjadekp/images/remove_items_button_icon.png';
     removeCheckedItems.append(removeCheckedItemsIcon);
 
-    activeListingsTable.insertBefore(selectAllCheckBoxContainer, document.getElementById("tabContentsMyActiveMarketListingsRows"));
+    activeListingsTable.insertBefore(selectAllCheckBoxContainer, document.getElementById('tabContentsMyActiveMarketListingsRows'));
+};
 
-    //Add search bar
-    let bGoneSearchBarContainer = document.createElement("div");
-    bGoneSearchBarContainer.id = "bGoneSearchBarContainer";
-    document.getElementById("mainContents").insertBefore(bGoneSearchBarContainer, document.getElementById("myListings"));
+function addListingCheckboxes() { 
+    const listingRowElements = document.getElementById('tabContentsMyActiveMarketListingsRows').children;
+    for(let i = 0; i < listingRowElements.length; i++) {
+        let checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'bGoneCheckbox';
+        document.createTextNode(checkbox);
 
-    let searchBarContainer = document.createElement("div");
-    searchBarContainer.className = "bGoneInputContainer";
+        let checkboxContainer = document.createElement('label');
+        checkboxContainer.name = 'containedCheckbox';
+        checkboxContainer.className = 'bGoneCheckboxContainer';
+        checkboxContainer.append(checkbox);
+        
+        listingRowElements[i].insertBefore(checkboxContainer, listingRowElements[i].firstElementChild);
+    };
+};
+
+function wereCheckboxesAdded() {
+    const listing = document.getElementById('tabContentsMyActiveMarketListingsRows').firstElementChild;
+
+    if(!(listing === null) && (listing.firstElementChild.className === 'bGoneCheckboxContainer') && (listing.firstElementChild.tagName === 'LABEL')) {
+        return true;
+    } else {
+        return false;
+    };
+};
+
+//Add the extension's elements
+function addExtensionElements() {
+    const listingsContentTab = document.getElementById('tabContentsMyListings');
+    
+    const listingsContentTabObserver = new MutationObserver(function(mutationList) {
+        for(const mutation of mutationList) {
+            if(mutation.type === "childList") {
+                addSelectAllCheckBoxContainer();
+                addListingCheckboxes();
+
+                const listingsContainer = document.getElementById('tabContentsMyActiveMarketListingsRows');
+
+                const listingsContainerObserver = new MutationObserver(function(mutationList) {
+                    for(const mutation of mutationList) {
+                        if(mutation.type === 'childList' && !wereCheckboxesAdded()) {
+                            addListingCheckboxes();
+                        };
+                    };
+                });
+            
+                listingsContainerObserver.observe(listingsContainer, {childList: true});
+            };
+        };
+    });
+
+    listingsContentTabObserver.observe(listingsContentTab, {childList: true});
+
+    addSelectAllCheckBoxContainer();
+    addListingCheckboxes();
+
+    //Add search elements
+    let bGoneSearchBarContainer = document.createElement('div');
+    bGoneSearchBarContainer.id = 'bGoneSearchBarContainer';
+    document.getElementById('mainContents').insertBefore(bGoneSearchBarContainer, document.getElementById('myListings'));
+
+    let searchBarContainer = document.createElement('div');
+    searchBarContainer.className = 'bGoneInputContainer';
     bGoneSearchBarContainer.append(searchBarContainer);
 
-    let searchBar = document.createElement("input");
-    searchBar.type = "text";
-    searchBar.id = "bGoneSearchBar";
-    searchBar.className = "bGoneInputBar";
-    searchBar.placeholder = "Enter the item you wish to remove";
+    let searchBar = document.createElement('input');
+    searchBar.type = 'text';
+    searchBar.id = 'bGoneSearchBar';
+    searchBar.className = 'bGoneInputBar';
+    searchBar.placeholder = 'Enter the item you wish to remove';
     searchBarContainer.append(searchBar);
 
-    let searchBarButton = document.createElement("button");
-    searchBarButton.id = "bGoneSearchBarButton";
-    searchBarButton.textContent = "Remove";
-    searchBarButton.onclick = startSearch;
+    let searchBarButton = document.createElement('button');
+    searchBarButton.id = 'bGoneSearchBarButton';
+    searchBarButton.textContent = 'Remove';
+    searchBarButton.addEventListener('click', startSearch);
     searchBarContainer.append(searchBarButton);
 
-    let priceInputBarContainer = document.createElement("div");
-    priceInputBarContainer.className = "bGoneInputContainer";
+    let priceInputBarContainer = document.createElement('div');
+    priceInputBarContainer.className = 'bGoneInputContainer';
     bGoneSearchBarContainer.append(priceInputBarContainer);
 
-    let priceInputSelector = document.createElement("select");
-    priceInputSelector.id = "bGonePriceInputSelector";
+    let priceInputSelector = document.createElement('select');
+    priceInputSelector.id = 'bGonePriceInputSelector';
 
-    let priceInputBar = document.createElement("input");
-    priceInputBar.type = "text";
-    priceInputBar.id = "bGonePriceInputBar";
-    priceInputBar.className = "bGoneInputBar";
-    priceInputBar.placeholder = "Enter the price of the items you want to remove";
+    let priceInputBar = document.createElement('input');
+    priceInputBar.type = 'text';
+    priceInputBar.id = 'bGonePriceInputBar';
+    priceInputBar.className = 'bGoneInputBar';
+    priceInputBar.placeholder = 'Enter the price of the items you want to remove';
     //priceInputBar.onblur = checkPriceInput; //Check only when about to search
     priceInputBar.onkeydown = function(event) {
-        let selectorValue = document.getElementById("bGonePriceInputSelector").value;
+        let selectorValue = document.getElementById('bGonePriceInputSelector').value;
         let validInputs = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'Backspace'];
     
         if(selectorValue === '3') {
@@ -159,36 +192,36 @@ function addExtensionElements() {
     priceInputBarContainer.append(priceInputBar);
     priceInputBarContainer.append(priceInputSelector);
 
-    let priceInputEqual = document.createElement("option");
+    let priceInputEqual = document.createElement('option');
     priceInputEqual.value = 0;
-    priceInputEqual.textContent = "Equal to";
+    priceInputEqual.textContent = 'Equal to';
     priceInputSelector.append(priceInputEqual);
 
-    let priceInputMoreThan = document.createElement("option");
+    let priceInputMoreThan = document.createElement('option');
     priceInputMoreThan.value = 1;
-    priceInputMoreThan.textContent = "More Than";
+    priceInputMoreThan.textContent = 'More Than';
     priceInputSelector.append(priceInputMoreThan);
 
-    let priceInputLessThan = document.createElement("option");
+    let priceInputLessThan = document.createElement('option');
     priceInputLessThan.value = 2;
-    priceInputLessThan.textContent = "Less Than";
+    priceInputLessThan.textContent = 'Less Than';
     priceInputSelector.append(priceInputLessThan);
 
-    let priceInputRange = document.createElement("option");
+    let priceInputRange = document.createElement('option');
     priceInputRange.value = 3;
-    priceInputRange.textContent = "Range";
+    priceInputRange.textContent = 'Range';
     priceInputSelector.append(priceInputRange);
 
-    let quantityInputContainer = document.createElement("div");
-    quantityInputContainer.className = "bGoneInputContainer";
+    let quantityInputContainer = document.createElement('div');
+    quantityInputContainer.className = 'bGoneInputContainer';
     bGoneSearchBarContainer.append(quantityInputContainer);
 
-    let quantityInputBar = document.createElement("input");
-    quantityInputBar.type = "text";
-    quantityInputBar.id = "bGoneQuantityInput";
-    quantityInputBar.className = "bGoneInputBar";
-    quantityInputBar.style.display = "block";
-    quantityInputBar.placeholder = "Enter the quantity of matching listings you want to remove";
+    let quantityInputBar = document.createElement('input');
+    quantityInputBar.type = 'text';
+    quantityInputBar.id = 'bGoneQuantityInput';
+    quantityInputBar.className = 'bGoneInputBar';
+    quantityInputBar.style.display = 'block';
+    quantityInputBar.placeholder = 'Enter the quantity of matching listings you want to remove';
     //quantityInputBar.onblur = checkQuantityInput; //Check only when about to search
     quantityInputBar.onkeydown = function(event) {
         let validInputs = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'Backspace'];
@@ -200,14 +233,41 @@ function addExtensionElements() {
     quantityInputContainer.append(quantityInputBar);
 };
 
+function getListingsPerPage() {
+    const quantityOptions = [];
+    quantityOptions.push(document.getElementById("my_listing_pagesize_10"));
+    quantityOptions.push(document.getElementById("my_listing_pagesize_30"));
+    quantityOptions.push(document.getElementById("my_listing_pagesize_100"));
+
+    for(let i = 0; i < quantityOptions.length; i++) {
+        if(quantityOptions[i].className === "disabled") {
+            return Number.parseInt(quantityOptions[i].innerText);
+        };
+    };
+};
+
+function refreshListings() {
+    const quantityOptions = [];
+    quantityOptions.push(document.getElementById("my_listing_pagesize_10"));
+    quantityOptions.push(document.getElementById("my_listing_pagesize_30"));
+    quantityOptions.push(document.getElementById("my_listing_pagesize_100"));
+
+    for(let i = 0; i < quantityOptions.length; i++) {
+        if(quantityOptions[i].className === "disabled") {
+            window.setTimeout(quantityOptions[i].click(), 700);
+        };
+    };
+};
+
 function checkPriceInput() {
-    let element = document.getElementById("bGonePriceInputBar");
-    let selectorValue = document.getElementById("bGonePriceInputSelector").value;
-    let value;
+    let element = document.getElementById('bGonePriceInputBar');
 
     if(element.value === '') {
         return true;
     };
+
+    let selectorValue = document.getElementById('bGonePriceInputSelector').value;
+    let value;
 
     if(selectorValue !== '3') {
         value = removeCommas(element.value);
@@ -217,15 +277,15 @@ function checkPriceInput() {
             element.value = value;
             return true;
         } else {
-            element.value = "";
+            element.value = '';
             return false;
         };
     } else {
         value = element.value;
 
-        value = value.split("-");
+        value = value.split('-');
         if(value.length !== 2) {
-            element.value = "";
+            element.value = '';
             return false;
         }
 
@@ -234,7 +294,7 @@ function checkPriceInput() {
             
             for(let i = 0; i < value[index].length; i++) {
                 if(isNaN(value[index].charAt(i)) && value[index].charAt(i) !== '.') {
-                    element.value = "";
+                    element.value = '';
                     return false;
                 };
             };
@@ -252,16 +312,16 @@ function checkPriceInput() {
             value[1] = maxValue;
         };
 
-        element.value = value[0] + "-" + value[1];
+        element.value = value[0] + '-' + value[1];
         return true;
     };
 };
 
-function removeCommas(val) { //If a comma is found that means dots are used as a thousand separator, we don't want that.
+function removeCommas(val) {
     for(let i = 0; i < val.length; i++) {
-        if(val.charAt(i) === ",") {
-            val = val.replace(/\./g, "");
-            val = val.replace(/\,/g, ".");
+        if(val.charAt(i) === ',') {
+            val = val.replace(/\./g, '');
+            val = val.replace(/\,/g, '.');
             break;
         };
     };
@@ -270,7 +330,7 @@ function removeCommas(val) { //If a comma is found that means dots are used as a
 };
 
 function checkQuantityInput() { //When function to get listings count is done use here to check (inputValue <= Count)?
-    let element = document.getElementById("bGoneQuantityInput");
+    let element = document.getElementById('bGoneQuantityInput');
 
     if(element.value === '') {
         return true;
@@ -278,7 +338,7 @@ function checkQuantityInput() { //When function to get listings count is done us
 
     let value = Number.parseInt(element.value);
 
-    if(!Number.isNaN(value) && value > 0) {
+    if(!Number.isNaN(value) && value > 0 && value <= getListingsAmount()) {
         element.value = value;
         return true;
     } else {
@@ -288,24 +348,24 @@ function checkQuantityInput() { //When function to get listings count is done us
 };
 
 function getItemId(listingElementId) {
-    //Function input example: "mylisting_4060547854836020987"
+    //Function input example: 'mylisting_4060547854836020987'
     return listingElementId.substring(10, listingElementId.length);
 };
 
 function startSearch(prevStartValue) {
-    let nameInput = document.getElementById("bGoneSearchBar").value;
-    let priceInput = document.getElementById("bGonePriceInputBar").value;
+    let nameInput = document.getElementById('bGoneSearchBar').value;
+    let priceInput = document.getElementById('bGonePriceInputBar').value;
 
-    if(nameInput === "" && priceInput === "") {
+    if(nameInput === '' && priceInput === '') {
         alert("Can't perform search with both item name and price empty.");
-        document.getElementById("bGonePriceInputBar").value = '';
+        document.getElementById('bGonePriceInputBar').value = '';
         return false;
     } else {
         //Input check.
         let isPriceValid = checkPriceInput();
         
         if(!isPriceValid) {
-            let priceSearchMode = document.getElementById("bGonePriceInputSelector").value;
+            let priceSearchMode = document.getElementById('bGonePriceInputSelector').value;
 
             if(priceSearchMode === '3') {
                 alert('Input price range is not valid.\nFirst write the minimum value, then a dash (-) and then the maximum value.\nExample: 1.05-3');
@@ -324,53 +384,68 @@ function startSearch(prevStartValue) {
         };
     };
 
-    console.log("c busca");
-    return;//----------------------------------------------------------------------------------------------
-    if(typeof prevStartValue !== "number" || prevStartValue === null) {
-        lockInputs();
+    if(typeof prevStartValue !== 'number' || prevStartValue === null) {
+        //lockInputs();//-------------------------------------------------------------------------------------
         getMarketListings(0, 100);
         return;
     };
 
-    let listingsAmount = Number.parseInt(document.getElementById("my_market_activelistings_number").innerHTML);
+    let listingsAmount = getListingsAmount();
 
     if(listingsAmount > (prevStartValue + 100)) {
         getMarketListings(prevStartValue + 100, 100);
     } else {
-        console.log("Finished search.");
+        console.log('Finished search.');
+        refreshListings();
         unlockInputs();
     };
 };
 
+function getListingsAmount() {
+    let listingsAmount = Number.parseInt(document.getElementById('my_market_activelistings_number').innerHTML);
+
+    if(!Number.isNaN(listingsAmount)) {
+        return listingsAmount;
+    } else {
+        return -1;
+    };
+};
+
 function lockInputs() {
-    let searchBar = document.getElementById("bGoneSearchBar");
-    searchBar.setAttribute("disabled", true);
+    let searchBarButton = document.getElementById('bGoneSearchBarButton');
+    searchBarButton.setAttribute('disabled', true);
 
-    let priceInputBar = document.getElementById("bGonePriceInputBar");
-    priceInputBar.setAttribute("disabled", true);
+    let searchBar = document.getElementById('bGoneSearchBar');
+    searchBar.setAttribute('disabled', true);
 
-    let priceInputSelector = document.getElementById("bGonePriceInputSelector");
-    priceInputSelector.setAttribute("disabled", true);
+    let priceInputBar = document.getElementById('bGonePriceInputBar');
+    priceInputBar.setAttribute('disabled', true);
 
-    let quantityInput = document.getElementById("bGoneQuantityInput");
-    quantityInput.setAttribute("disabled", true);
+    let priceInputSelector = document.getElementById('bGonePriceInputSelector');
+    priceInputSelector.setAttribute('disabled', true);
+
+    let quantityInput = document.getElementById('bGoneQuantityInput');
+    quantityInput.setAttribute('disabled', true);
 };
 
 function unlockInputs() {
-    let searchBar = document.getElementById("bGoneSearchBar");
+    let searchBarButton = document.getElementById('bGoneSearchBarButton');
+    searchBarButton.disabled = false;
+
+    let searchBar = document.getElementById('bGoneSearchBar');
     searchBar.disabled = false;
-    searchBar.value = "";
+    searchBar.value = '';
 
-    let priceInputBar = document.getElementById("bGonePriceInputBar");
+    let priceInputBar = document.getElementById('bGonePriceInputBar');
     priceInputBar.disabled = false;
-    priceInputBar.value = "";
+    priceInputBar.value = '';
 
-    let priceInputSelector = document.getElementById("bGonePriceInputSelector");
+    let priceInputSelector = document.getElementById('bGonePriceInputSelector');
     priceInputSelector.disabled = false;
 
-    let quantityInput = document.getElementById("bGoneQuantityInput");
+    let quantityInput = document.getElementById('bGoneQuantityInput');
     quantityInput.disabled = false;
-    quantityInput.value = "";
+    quantityInput.value = '';
 };
 
 function getMarketListings(start, count) {
@@ -393,7 +468,7 @@ function getMarketListings(start, count) {
     };
 
     //Use: https://steamcommunity.com/market/mylistings/?query=&start=0&count=
-    httpRequest.open("GET", "https://steamcommunity.com/market/mylistings/?start=" + start + "&count=" + count, true);
+    httpRequest.open('GET', 'https://steamcommunity.com/market/mylistings/?start=' + start + '&count=' + count, true);
 
     httpRequest.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 
@@ -405,7 +480,7 @@ function parseMarketListingsData(data, startVal) {
     let listingRowElements;
     const listingsData = [];
 
-    if(data !== "null" && data.length > 0) {
+    if(data !== 'null' && data.length > 0) {
         listingsDataJSON = JSON.parse(data);
     } else {
         //JSON was null
@@ -413,17 +488,17 @@ function parseMarketListingsData(data, startVal) {
         return;
     }
 
-    if(listingsDataJSON.hasOwnProperty("results_html")) {
-        let activeListingsTable = document.createElement("div");
-        activeListingsTable.innerHTML = listingsDataJSON["results_html"];
+    if(listingsDataJSON.hasOwnProperty('results_html')) {
+        let activeListingsTable = document.createElement('div');
+        activeListingsTable.innerHTML = listingsDataJSON['results_html'];
 
-        let querySelectorString = "div > div#tabContentsMyActiveMarketListingsTable > div#tabContentsMyActiveMarketListingsRows";
+        let querySelectorString = 'div > div#tabContentsMyActiveMarketListingsTable > div#tabContentsMyActiveMarketListingsRows';
 
         if(activeListingsTable.querySelector(querySelectorString)) {
             listingRowElements = activeListingsTable.querySelector(querySelectorString).children;
         };
     } else {
-        alert("Field with listing data could not be found");
+        alert('Field with listing data could not be found');
         return;
     };
 
@@ -431,8 +506,8 @@ function parseMarketListingsData(data, startVal) {
     for(let i = 0; i < listingRowElements.length; i++){
         listingsData.push( {
             id: getItemId(listingRowElements[i].id),
-            name: listingRowElements[i].querySelector("a.market_listing_item_name_link").innerHTML,
-            price: getRawPrice(listingRowElements[i].querySelector("span.market_listing_price > span > span:first-child").innerHTML)
+            name: listingRowElements[i].querySelector('a.market_listing_item_name_link').innerHTML,
+            price: getRawPrice(listingRowElements[i].querySelector('span.market_listing_price > span > span:first-child').innerHTML)
         } );
     };
     
@@ -441,7 +516,7 @@ function parseMarketListingsData(data, startVal) {
 };
 
 function getRawPrice(price) {
-    let rawPrice = (price.match(/[0-9\,\.]/g)).join("");
+    let rawPrice = (price.match(/[0-9\,\.]/g)).join('');
 
     rawPrice = removeCommas(rawPrice);
 
@@ -451,36 +526,17 @@ function getRawPrice(price) {
 };
 
 function searchMatchingListings(listingsData, startVal) {
-    let name = document.getElementById("bGoneSearchBar").value;
-    let price = document.getElementById("bGonePriceInputBar").value;
+    let name = document.getElementById('bGoneSearchBar').value;
+    let price = document.getElementById('bGonePriceInputBar').value;
     let maxPrice;
-    let priceSearchMode = document.getElementById("bGonePriceInputSelector").value;
-    let matchingListingsQuantity = Number.parseInt(document.getElementById("bGoneQuantityInput").value);
+    let priceSearchMode = document.getElementById('bGonePriceInputSelector').value;
+    let matchingListingsQuantity = Number.parseInt(document.getElementById('bGoneQuantityInput').value);
 
     if(priceSearchMode === '3') {
-        let invalidInput = true;
-
-        for(let i = 0; i < price.length; i++) {
-            if(price.charAt(i) === '-') {
-                invalidInput = false;
-            };
-        };
-
         let priceRange = price.split('-');
-
-        if(priceRange.length !== 2) {
-            invalidInput = true;
-        };
-
-        if(invalidInput) {
-            //Add alert or some better feedback.
-            console.log("Invalid range input");
-            return;
-        };
 
         price = getRawPrice(priceRange[0]);
         maxPrice = getRawPrice(priceRange[1]);
-        //Should be good enough for now
     } else {
         price = Number.parseFloat(price);
     };
@@ -488,15 +544,14 @@ function searchMatchingListings(listingsData, startVal) {
     for(let i = 0; i < listingsData.length; i++) {
 
         if(checkName(name, listingsData[i].name) && checkPrice(price, listingsData[i].price, priceSearchMode, maxPrice)) {
-            console.log(listingsData[i].name + "   " + listingsData[i].price + "   " + listingsData[i].id);
+            console.log(listingsData[i].name + '   ' + listingsData[i].price + '   ' + listingsData[i].id);
             //removeItemListing(listingsData[i].id, null);
 
             if(!Number.isNaN(matchingListingsQuantity)) {
                 if(matchingListingsQuantity > 1) {
                     matchingListingsQuantity--;
                 } else {
-                    let listingsNumber = Number.parseInt(document.getElementById("my_market_activelistings_number").innerHTML);
-                    startSearch(listingsNumber);
+                    startSearch(getListingsAmount());
                     return;
                 };
             };
@@ -504,14 +559,14 @@ function searchMatchingListings(listingsData, startVal) {
     };
     //End of func--------------------------------------------------------------------------De-comment when ready to go
     if(!Number.isNaN(matchingListingsQuantity)) {
-        let quantityInput = document.getElementById("bGoneQuantityInput");
+        let quantityInput = document.getElementById('bGoneQuantityInput');
         quantityInput.value = matchingListingsQuantity;
     };
     //startSearch(startVal);
 };
 
 function checkName(nameParam, itemName) {
-    if(nameParam === "") {
+    if(nameParam === '') {
         return true;
     };
 
@@ -519,9 +574,9 @@ function checkName(nameParam, itemName) {
 };
 
 function checkPrice(priceParam, price, mode, maxPrice) {
-    if(Number.isNaN(priceParam) || priceParam === "") {
+    if(Number.isNaN(priceParam) || priceParam === '') {
         return true;
-    }
+    };
 
     /*
     0 - Equal to
@@ -537,9 +592,9 @@ function checkPrice(priceParam, price, mode, maxPrice) {
         case '2':
             return priceParam > price;
         case '3':
-            return (priceParam > price) && (priceParam < maxPrice);
+            return (priceParam < price) && (price < maxPrice);
         default:
-            console.log("Using default price search mode for some reason.");
+            console.log('Using default price search mode for some reason.');
             return price == priceParam;
     };
 };
@@ -554,38 +609,41 @@ function removeItemListing(listingId, checkboxElement) {
                 checkboxElement.checked = false;
             };
 
-            let listingElement = document.getElementById("mylisting_" + listingId);
+            let listingElement = document.getElementById('mylisting_' + listingId);
             if(listingElement) {
-                listingElement.style.display = "none";
+                listingElement.style.display = 'none';
             };
         
-            let listingsNumber = Number.parseInt(document.getElementById("my_market_activelistings_number").innerHTML);
-            if(typeof listingsNumber === "number" && isFinite(listingsNumber)) {
+            let listingsNumber = getListingsAmount();
+            if(typeof listingsNumber === 'number' && isFinite(listingsNumber)) {
                 listingsNumber = listingsNumber - 1;
             
-                let  activeListings = document.getElementById("my_market_activelistings_number");
+                let  activeListings = document.getElementById('my_market_activelistings_number');
                 activeListings.innerHTML = listingsNumber;
 
-                let sellListings = document.getElementById("my_market_selllistings_number");
+                let sellListings = document.getElementById('my_market_selllistings_number');
                 sellListings.innerHTML = listingsNumber;
+
+                let resultsCount = document.getElementById("tabContentsMyActiveMarketListings_total");
+                resultsCount.innerHTML = listingsNumber;
            };
         };
     };
 
-    httpRequest.open("POST", "https://steamcommunity.com/market/removelisting/" + listingId, true);
+    httpRequest.open('POST', 'https://steamcommunity.com/market/removelisting/' + listingId, true);
 
     httpRequest.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 
-    httpRequest.send("sessionid=" + getSessionIdCookie());
+    httpRequest.send('sessionid=' + getSessionIdCookie());
 };
 
 function getSessionIdCookie() {
     let cookies = document.cookie;
-    let cookieFirstChar = cookies.indexOf("sessionid=") + 10;
+    let cookieFirstChar = cookies.indexOf('sessionid=') + 10;
     let cookieLastChar;
 
     for(let i = cookieFirstChar; i < cookies.length; i++){
-        if(cookies.charAt(i) === ";") {
+        if(cookies.charAt(i) === ';') {
             cookieLastChar = i;
             break;
         };
