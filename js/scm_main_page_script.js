@@ -415,7 +415,7 @@ function startSearch(prevStartValue) {
     if(listingsAmount > (prevStartValue + 100)) {
         getMarketListings(prevStartValue + 100, 100);
     } else {
-        console.log('Finished search.');
+        //Finished search.
         refreshListings();
         unlockInputs();
     };
@@ -531,7 +531,6 @@ function parseMarketListingsData(data, startVal) {
         } );
     };
     
-    console.log(listingsData);
     searchMatchingListings(listingsData, startVal);
 };
 
