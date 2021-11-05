@@ -7,7 +7,7 @@ Listings-B-Gone is a simple and light extension which only purpose is to make St
  - Easy to use
  - Faster than other methods
  - Executes on a single site
- - Free forever! (And you neither are nor will be the product
+ - Free forever! (And you neither are nor will be the product)
  - Mozilla version soon (maybe :I )
 
 ##### Features
