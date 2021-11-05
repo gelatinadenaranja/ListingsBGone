@@ -93,6 +93,22 @@ function addSelectAllCheckBoxContainer() {
     activeListingsTable.insertBefore(selectAllCheckBoxContainer, document.getElementById('tabContentsMyActiveMarketListingsRows'));
 };
 
+function addListingsElementObserver() {
+    //Observer to check whenever 'tabContentsMyActiveMarketListingsRows' changes, which is when the user selects another item page.
+    const listingsContainer = document.getElementById('tabContentsMyActiveMarketListingsRows');
+
+                const listingsContainerObserver = new MutationObserver(function(mutationList) {
+                    //Observer to check whenever 'tabContentsMyActiveMarketListingsRows' changes, which is when the user selects another item page.
+                    for(const mutation of mutationList) {
+                        if(mutation.type === 'childList' && !wereCheckboxesAdded()) {
+                            addListingCheckboxes();
+                        };
+                    };
+                });
+            
+                listingsContainerObserver.observe(listingsContainer, {childList: true});
+};
+
 function addListingCheckboxes() { 
     //Add the checkbox elements to 'tabContentsMyActiveMarketListingsRows' children.
     const listingRowElements = document.getElementById('tabContentsMyActiveMarketListingsRows').children;
@@ -132,19 +148,7 @@ function addExtensionElements() {
             if(mutation.type === "childList") {
                 addSelectAllCheckBoxContainer();
                 addListingCheckboxes();
-
-                const listingsContainer = document.getElementById('tabContentsMyActiveMarketListingsRows');
-
-                const listingsContainerObserver = new MutationObserver(function(mutationList) {
-                    //Observer to check whenever 'tabContentsMyActiveMarketListingsRows' changes, which is when the user selects another item page.
-                    for(const mutation of mutationList) {
-                        if(mutation.type === 'childList' && !wereCheckboxesAdded()) {
-                            addListingCheckboxes();
-                        };
-                    };
-                });
-            
-                listingsContainerObserver.observe(listingsContainer, {childList: true});
+                addListingsElementObserver();
             };
         };
     });
@@ -153,6 +157,7 @@ function addExtensionElements() {
 
     addSelectAllCheckBoxContainer();
     addListingCheckboxes();
+    addListingsElementObserver();
 
     //Add search elements
     let bGoneSearchBarContainer = document.createElement('div');
@@ -182,7 +187,6 @@ function addExtensionElements() {
 
     let priceInputSelector = document.createElement('select');
     priceInputSelector.id = 'bGonePriceInputSelector';
-
     let priceInputBar = document.createElement('input');
     priceInputBar.type = 'text';
     priceInputBar.id = 'bGonePriceInputBar';
