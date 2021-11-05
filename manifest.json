@@ -31,5 +31,5 @@
     "32": "images/place_holder_icon.png"
   },
 
-  "web_accessible_resources": ["images/remove_items_button_icon.png"]
+  "web_accessible_resources": ["images/*"]
 }

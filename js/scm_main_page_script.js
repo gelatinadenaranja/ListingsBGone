@@ -1,5 +1,5 @@
-//Check if there are active listings
 window.addEventListener('load', function isListingsElementAvailable() {
+    //Check if there are active listings for the extension to work with.
     if(document.getElementById('tabContentsMyActiveMarketListingsRows')) {
         addExtensionElements();
     };
@@ -21,6 +21,7 @@ function addSelectAllCheckBoxContainer() {
     selectAllCheckbox.type = 'checkbox';
     selectAllCheckbox.id = 'bGoneSelectAllCheckbox';
     selectAllCheckbox.onclick = function() {
+        //Check all checkbox elements in the 'tabContentsMyActiveMarketListingsRows' children.
         const listingRowElements = document.getElementById('tabContentsMyActiveMarketListingsRows').children;
         let bGoneCheckboxItems = [];
         
@@ -40,16 +41,27 @@ function addSelectAllCheckBoxContainer() {
     };
     selectAllContainer.append(selectAllCheckbox);
 
-    //----------------------------------------------------------------
+    let buttonContainer = document.createElement("div");
+    buttonContainer.style.display = "flex";
+
+    selectAllCheckBoxContainer.append(buttonContainer);
+
     let refreshListingsButton = document.createElement("button");
-    refreshListingsButton.text = "ola";
+    refreshListingsButton.id = "bGoneRefreshListingsButton";
+    refreshListingsButton.title = "Refresh listings"
     refreshListingsButton.onclick = refreshListings;
-    selectAllCheckBoxContainer.append(refreshListingsButton);
+    buttonContainer.append(refreshListingsButton);
+
+    let refreshListingsButtonIcon = document.createElement('img');
+    refreshListingsButtonIcon.src = 'chrome-extension://pagdlobfoanbkfbddkkeohbahhjadekp/images/refresh_items_button_icon.png';
+    refreshListingsButton.append(refreshListingsButtonIcon);
 
     let removeCheckedItems = document.createElement('button');
     removeCheckedItems.id = 'bGoneRemoveCheckedItems';
     removeCheckedItems.textContent = 'Remove checked items';
     removeCheckedItems.onclick = function() {
+        /* Remove all listings where the checkbox elements in the 'tabContentsMyActiveMarketListingsRows'
+         * children are checked and the children are visible. Then if no listings are visible, refresh. */
         const listingRowElements = document.getElementById('tabContentsMyActiveMarketListingsRows').children;
         const querySelectorString = 'div.market_listing_row.market_recent_listing_row > label.bGoneCheckboxContainer > input[type=checkbox].bGoneCheckbox:checked';
         const selectAllCheckbox = document.getElementById("bGoneSelectAllCheckbox");
@@ -72,7 +84,7 @@ function addSelectAllCheckBoxContainer() {
 
         selectAllCheckbox.checked = false;
     };
-    selectAllCheckBoxContainer.append(removeCheckedItems);
+    buttonContainer.append(removeCheckedItems);
 
     let removeCheckedItemsIcon = document.createElement('img');
     removeCheckedItemsIcon.src = 'chrome-extension://pagdlobfoanbkfbddkkeohbahhjadekp/images/remove_items_button_icon.png';
@@ -82,6 +94,7 @@ function addSelectAllCheckBoxContainer() {
 };
 
 function addListingCheckboxes() { 
+    //Add the checkbox elements to 'tabContentsMyActiveMarketListingsRows' children.
     const listingRowElements = document.getElementById('tabContentsMyActiveMarketListingsRows').children;
     for(let i = 0; i < listingRowElements.length; i++) {
         let checkbox = document.createElement('input');
@@ -99,6 +112,7 @@ function addListingCheckboxes() {
 };
 
 function wereCheckboxesAdded() {
+    //Check if the checkbox elements were added to the 'tabContentsMyActiveMarketListingsRows' children already.
     const listing = document.getElementById('tabContentsMyActiveMarketListingsRows').firstElementChild;
 
     if(!(listing === null) && (listing.firstElementChild.className === 'bGoneCheckboxContainer') && (listing.firstElementChild.tagName === 'LABEL')) {
@@ -113,6 +127,7 @@ function addExtensionElements() {
     const listingsContentTab = document.getElementById('tabContentsMyListings');
     
     const listingsContentTabObserver = new MutationObserver(function(mutationList) {
+        //Observer to check whenever 'tabContentsMyListings' changes, which is when items get refreshed.
         for(const mutation of mutationList) {
             if(mutation.type === "childList") {
                 addSelectAllCheckBoxContainer();
@@ -121,6 +136,7 @@ function addExtensionElements() {
                 const listingsContainer = document.getElementById('tabContentsMyActiveMarketListingsRows');
 
                 const listingsContainerObserver = new MutationObserver(function(mutationList) {
+                    //Observer to check whenever 'tabContentsMyActiveMarketListingsRows' changes, which is when the user selects another item page.
                     for(const mutation of mutationList) {
                         if(mutation.type === 'childList' && !wereCheckboxesAdded()) {
                             addListingCheckboxes();
@@ -172,8 +188,8 @@ function addExtensionElements() {
     priceInputBar.id = 'bGonePriceInputBar';
     priceInputBar.className = 'bGoneInputBar';
     priceInputBar.placeholder = 'Enter the price of the items you want to remove';
-    //priceInputBar.onblur = checkPriceInput; //Check only when about to search
     priceInputBar.onkeydown = function(event) {
+        //Only allow desired inputs in the text field. When selectorValue === '3' a '-' gets added because that's when a range is used in the search.
         let selectorValue = document.getElementById('bGonePriceInputSelector').value;
         let validInputs = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'Backspace'];
     
@@ -222,8 +238,8 @@ function addExtensionElements() {
     quantityInputBar.className = 'bGoneInputBar';
     quantityInputBar.style.display = 'block';
     quantityInputBar.placeholder = 'Enter the quantity of matching listings you want to remove';
-    //quantityInputBar.onblur = checkQuantityInput; //Check only when about to search
     quantityInputBar.onkeydown = function(event) {
+        //Only allow desired inputs in the text field.
         let validInputs = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'Backspace'];
     
         if(!validInputs.includes(event.key)) {
@@ -234,6 +250,7 @@ function addExtensionElements() {
 };
 
 function getListingsPerPage() {
+    //Get how many items per page the user has set.
     const quantityOptions = [];
     quantityOptions.push(document.getElementById("my_listing_pagesize_10"));
     quantityOptions.push(document.getElementById("my_listing_pagesize_30"));
@@ -247,6 +264,7 @@ function getListingsPerPage() {
 };
 
 function refreshListings() {
+    //Trigger the existent 'RefreshMyMarketListings()' function in the site by calling a click on the correct element.
     const quantityOptions = [];
     quantityOptions.push(document.getElementById("my_listing_pagesize_10"));
     quantityOptions.push(document.getElementById("my_listing_pagesize_30"));
@@ -260,6 +278,7 @@ function refreshListings() {
 };
 
 function checkPriceInput() {
+    //Validation for 'bGonePriceInputBar' element input.
     let element = document.getElementById('bGonePriceInputBar');
 
     if(element.value === '') {
@@ -329,7 +348,8 @@ function removeCommas(val) {
     return val;
 };
 
-function checkQuantityInput() { //When function to get listings count is done use here to check (inputValue <= Count)?
+function checkQuantityInput() {
+    //Validation for 'bGoneQuantityInput' element input.
     let element = document.getElementById('bGoneQuantityInput');
 
     if(element.value === '') {
@@ -385,7 +405,7 @@ function startSearch(prevStartValue) {
     };
 
     if(typeof prevStartValue !== 'number' || prevStartValue === null) {
-        //lockInputs();//-------------------------------------------------------------------------------------
+        lockInputs();
         getMarketListings(0, 100);
         return;
     };
@@ -544,8 +564,8 @@ function searchMatchingListings(listingsData, startVal) {
     for(let i = 0; i < listingsData.length; i++) {
 
         if(checkName(name, listingsData[i].name) && checkPrice(price, listingsData[i].price, priceSearchMode, maxPrice)) {
-            console.log(listingsData[i].name + '   ' + listingsData[i].price + '   ' + listingsData[i].id);
-            //removeItemListing(listingsData[i].id, null);
+            //console.log(listingsData[i].name + '   ' + listingsData[i].price + '   ' + listingsData[i].id);
+            removeItemListing(listingsData[i].id, null);
 
             if(!Number.isNaN(matchingListingsQuantity)) {
                 if(matchingListingsQuantity > 1) {
@@ -557,12 +577,12 @@ function searchMatchingListings(listingsData, startVal) {
             };
         };
     };
-    //End of func--------------------------------------------------------------------------De-comment when ready to go
+
     if(!Number.isNaN(matchingListingsQuantity)) {
         let quantityInput = document.getElementById('bGoneQuantityInput');
         quantityInput.value = matchingListingsQuantity;
     };
-    //startSearch(startVal);
+    startSearch(startVal);
 };
 
 function checkName(nameParam, itemName) {

@@ -15,11 +15,12 @@ div#bGoneSearchBarContainer > div.bGoneInputContainer {
   /*Search bar button and select elements*/
 button#bGoneSearchBarButton, select#bGonePriceInputSelector {
     align-content: center !important;
+    text-align: center;
     background-image: linear-gradient(rgb(132, 187, 60), rgb(81, 113, 36));
     color: white;
-    padding: 10px;
+    padding: 8px;
     height: 35px;
-    width: 80px;
+    width: 85px;
 }
 
 button#bGoneSearchBarButton:hover, select#bGonePriceInputSelector:hover {
@@ -29,6 +30,10 @@ button#bGoneSearchBarButton:hover, select#bGonePriceInputSelector:hover {
 button#bGoneSearchBarButton:active, select#bGonePriceInputSelector:active {
     background-image: none;
     background-color: rgb(181, 216, 137) !important;
+}
+
+button#bGoneSearchBarButton:disabled, select#bGonePriceInputSelector:disabled {
+    background-image: linear-gradient(rgb(84, 117, 38), rgb(43, 60, 19));
 }
   /*Search bar input fields*/
 div#bGoneSearchBarContainer > div.bGoneInputContainer > input.bGoneInputBar {
@@ -58,8 +63,11 @@ div#bGoneSearchBarContainer > div.bGoneInputContainer > input.bGoneInputBar:hove
     transition: 200ms;
 }
 
+div#bGoneSearchBarContainer > div.bGoneInputContainer > input.bGoneInputBar:disabled {
+    background-color: rgb(37, 54, 75) !important;
+}
+
 /*Select all extension elements*/
-  /*Container div*/
 div#bGoneSelectAllCheckBoxContainer {
     background-color: rgb(22, 32, 45);
     border-top-left-radius: 10px;
@@ -73,7 +81,6 @@ div#bGoneSelectAllCheckBoxContainer {
 label#bGoneSelectAllContainer {
     background-color: rgb(14, 19, 27);
     border-top-left-radius: 10px;
-    display: inline-block;
     padding-top: 10px;
     padding-right: 5px;
 }
@@ -82,19 +89,38 @@ input[type=checkbox]#bGoneSelectAllCheckbox {
     float: left;
 }
 
-div#bGoneSelectAllCheckBoxContainer > button#bGoneRemoveCheckedItems {
+button#bGoneRefreshListingsButton {
+    background-color: rgb(14, 19, 27);
+    border: none;
+    border-radius: 50%;
+}
+
+label#bGoneSelectAllContainer:hover, button#bGoneRefreshListingsButton:hover {
+    background-color: rgb(10, 15, 25);
+}
+
+label#bGoneSelectAllContainer:active, button#bGoneRefreshListingsButton:active {
+    background-color: rgb(25, 35, 60);
+}
+
+button#bGoneRefreshListingsButton > img {
+    margin-top: 3px;
+}
+
+button#bGoneRemoveCheckedItems {
     background-image: linear-gradient(rgb(132, 187, 60), rgb(81, 113, 36));
     border: none;
     border-top-right-radius: 10px;
     color: white;
     padding-top: 5px;
+    height: 100%;
 }
 
-div#bGoneSelectAllCheckBoxContainer > button#bGoneRemoveCheckedItems:hover {
+button#bGoneRemoveCheckedItems:hover {
     background-image: linear-gradient(rgb(96, 135, 44), rgb(63, 89, 28));
 }
 
-div#bGoneSelectAllCheckBoxContainer > button#bGoneRemoveCheckedItems:active {
+button#bGoneRemoveCheckedItems:active {
     background-image: none;
     background-color: rgb(181, 216, 137);
 }
