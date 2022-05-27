@@ -53,7 +53,7 @@ function addSelectAllCheckBoxContainer() {
     buttonContainer.append(refreshListingsButton);
 
     let refreshListingsButtonIcon = document.createElement('img');
-    refreshListingsButtonIcon.src = 'chrome-extension://pagdlobfoanbkfbddkkeohbahhjadekp/images/refresh_items_button_icon.png';
+    refreshListingsButtonIcon.src = chrome.runtime.getURL("images/refresh_items_button_icon.png");
     refreshListingsButton.append(refreshListingsButtonIcon);
 
     let removeCheckedItems = document.createElement('button');
@@ -78,7 +78,7 @@ function addSelectAllCheckBoxContainer() {
             };
         };
 
-        if(!visibleListings > 0) {
+        if(visibleListings <= 0) {
             refreshListings();
         };
 
@@ -87,7 +87,7 @@ function addSelectAllCheckBoxContainer() {
     buttonContainer.append(removeCheckedItems);
 
     let removeCheckedItemsIcon = document.createElement('img');
-    removeCheckedItemsIcon.src = 'chrome-extension://pagdlobfoanbkfbddkkeohbahhjadekp/images/remove_items_button_icon.png';
+    removeCheckedItemsIcon.src = chrome.runtime.getURL("images/remove_items_button_icon.png");
     removeCheckedItems.append(removeCheckedItemsIcon);
 
     activeListingsTable.insertBefore(selectAllCheckBoxContainer, document.getElementById('tabContentsMyActiveMarketListingsRows'));
@@ -193,10 +193,11 @@ function addExtensionElements() {
     priceInputBar.className = 'bGoneInputBar';
     priceInputBar.placeholder = 'Enter the price of the items you want to remove';
     priceInputBar.onkeydown = function(event) {
-        //Only allow desired inputs in the text field. When selectorValue === '3' a '-' gets added because that's when a range is used in the search.
+        //Only allow desired inputs in the text field.
         let selectorValue = document.getElementById('bGonePriceInputSelector').value;
         let validInputs = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'Backspace'];
     
+        //When selectorValue === '3' a '-' gets added because that's when a range is used in the search.
         if(selectorValue === '3') {
             validInputs.push('-');
 
@@ -262,7 +263,7 @@ function getListingsPerPage() {
 
     for(let i = 0; i < quantityOptions.length; i++) {
         if(quantityOptions[i].className === "disabled") {
-            return Number.parseInt(quantityOptions[i].innerText);
+            return parseInt(quantityOptions[i].innerText, 10);
         };
     };
 };
@@ -293,6 +294,7 @@ function checkPriceInput() {
     let value;
 
     if(selectorValue !== '3') {
+        //In case the range option isn't used.
         value = removeCommas(element.value);
         value = Number.parseFloat(value);
 
@@ -304,14 +306,16 @@ function checkPriceInput() {
             return false;
         };
     } else {
+        //In case the range option is used.
         value = element.value;
 
         value = value.split('-');
-        if(value.length !== 2) {
+        if(value.length !== 2) { //ADD CHECK FOR ARRAY DATATYPE
             element.value = '';
             return false;
         }
 
+        //Check each array element individually.
         for(let index = 0; index < 2; index++) {
             value[index] = removeCommas(value[index]);
             
@@ -325,10 +329,12 @@ function checkPriceInput() {
             value[index] = Number.parseFloat(value[index]);
         };
 
+        //Can't have a range with two equal values.
         if(value[0] == value[1]) {
             return false;
         };
 
+        //Sorting range values acordingly (Min value-Max value).
         if(value[0] > value[1]) {
             let maxValue = value[0];
             value[0] = value[1];
@@ -382,12 +388,12 @@ function startSearch(prevStartValue) {
 
     if(nameInput === '' && priceInput === '') {
         alert("Can't perform search with both item name and price empty.");
-        document.getElementById('bGonePriceInputBar').value = '';
+        document.getElementById('bGoneQuantityInput').value = '';
         return false;
     } else {
         //Input check.
         let isPriceValid = checkPriceInput();
-        
+
         if(!isPriceValid) {
             let priceSearchMode = document.getElementById('bGonePriceInputSelector').value;
 
@@ -403,17 +409,19 @@ function startSearch(prevStartValue) {
         let isQuantityValid = checkQuantityInput();
 
         if(!isQuantityValid) {
-            alert('Input quantity is not valid.\nOnly integers over 0 are accepted.\nExample: 20');
+            alert('Input quantity is not valid.\nOnly integers between 0 and the quantity of existing listings are valid.\nExample: 1');
             return false;
         };
     };
 
+    //Here starts the first iteration of the search.
     if(typeof prevStartValue !== 'number' || prevStartValue === null) {
         lockInputs();
         getMarketListings(0, 100);
         return;
     };
 
+    //Either continue or finish the search.
     let listingsAmount = getListingsAmount();
 
     if(listingsAmount > (prevStartValue + 100)) {
@@ -583,7 +591,7 @@ function searchMatchingListings(listingsData, startVal) {
 
     if(!Number.isNaN(matchingListingsQuantity)) {
         let quantityInput = document.getElementById('bGoneQuantityInput');
-        quantityInput.value = matchingListingsQuantity;
+        quantityInput.value = matchingListingsQuantity; //Update the amount of matching listings to be deleted.
     };
     startSearch(startVal);
 };
