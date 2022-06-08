@@ -252,6 +252,13 @@ function addExtensionElements() {
         };
     };
     quantityInputContainer.append(quantityInputBar);
+
+    /*TESTING BUTTONNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN*/
+    let tstbutton = document.createElement('button');
+    tstbutton.id = 'tstbutton';
+    tstbutton.textContent = 'CLICK ME SON!';
+    tstbutton.onclick = refreshListings;
+    bGoneSearchBarContainer.append(tstbutton);
 };
 
 function getListingsPerPage() {
@@ -269,17 +276,40 @@ function getListingsPerPage() {
 };
 
 function refreshListings() {
-    //Trigger the existent 'RefreshMyMarketListings()' function in the site by calling a click on the correct element.
-    const quantityOptions = [];
-    quantityOptions.push(document.getElementById("my_listing_pagesize_10"));
-    quantityOptions.push(document.getElementById("my_listing_pagesize_30"));
-    quantityOptions.push(document.getElementById("my_listing_pagesize_100"));
+    let httpRequest = new XMLHttpRequest();
 
-    for(let i = 0; i < quantityOptions.length; i++) {
-        if(quantityOptions[i].className === "disabled") {
-            window.setTimeout(quantityOptions[i].click(), 700);
+    httpRequest.onload = function() {
+        let requestResult;
+        let listingsElement = document.createElement('div');
+        listingsElement.id = 'testing_div';
+        let listingsElementContent;
+
+        if(httpRequest.status === 200) {
+            requestResult = httpRequest.responseText;
+            requestResult = JSON.parse(requestResult);
+
+            if(requestResult.hasOwnProperty('results_html')) {
+                listingsElementContent = requestResult['results_html'];
+
+                listingsElement.innerHTML = listingsElementContent;
+                listingsElement = listingsElement.querySelector('div#tabContentsMyActiveMarketListingsRows');
+                document.getElementById('tabContentsMyActiveMarketListingsRows').innerHTML = listingsElement.innerHTML;
+                /*Now make it so the start thing refreshes on the correct start value */
+                return;
+            } else {
+                console.log('Failed to load listings: Field in JSON not found.');
+                return;
+            };
+        } else {
+            console.log("Something happened and couldn't get the requested listings data.\nRequest status=" + httpRequest.status);
         };
     };
+
+    httpRequest.open('GET', 'https://steamcommunity.com/market/mylistings/?start=0&count=' + getListingsPerPage(), true);
+
+    httpRequest.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+    httpRequest.send();
 };
 
 function checkPriceInput() {
@@ -443,6 +473,19 @@ function getListingsAmount() {
     };
 };
 
+function getListingsPerPage() {
+    const quantityOptions = [];
+    quantityOptions.push(document.getElementById("my_listing_pagesize_10"));
+    quantityOptions.push(document.getElementById("my_listing_pagesize_30"));
+    quantityOptions.push(document.getElementById("my_listing_pagesize_100"));
+
+    for(let i = 0; i < quantityOptions.length; i++) {
+        if(quantityOptions[i].className === "disabled") {
+            return quantityOptions[i].innerHTML;
+        };
+    };
+};
+
 function lockInputs() {
     let searchBarButton = document.getElementById('bGoneSearchBarButton');
     searchBarButton.setAttribute('disabled', true);
@@ -495,7 +538,7 @@ function getMarketListings(start, count) {
         if(httpRequest.status === 200) {
             parseMarketListingsData(httpRequest.responseText, start);
         } else {
-            console.log("Something happened and couldn't get requested listings data.\nRequest status=" + httpRequest.status);
+            console.log("Something happened and couldn't get the requested listings data.\nRequest status=" + httpRequest.status);
         };
     };
 
