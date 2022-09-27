@@ -254,11 +254,11 @@ function addExtensionElements() {
     quantityInputContainer.append(quantityInputBar);
 
     /*TESTING BUTTONNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN*/
-    let tstbutton = document.createElement('button');
+    /*let tstbutton = document.createElement('button');
     tstbutton.id = 'tstbutton';
     tstbutton.textContent = 'CLICK ME SON!';
-    tstbutton.onclick = refreshListings;
-    bGoneSearchBarContainer.append(tstbutton);
+    tstbutton.onclick = setActiveListingPagingPage;
+    bGoneSearchBarContainer.append(tstbutton);*/
 };
 
 function getListingsPerPage() {
@@ -275,29 +275,49 @@ function getListingsPerPage() {
     };
 };
 
+function getActiveListingPagingPage() {
+    let pagingElement = document.getElementById('tabContentsMyActiveMarketListings_links');
+    let activePage = pagingElement.querySelector('span.market_paging_pagelink.active').innerHTML;
+
+    return activePage;
+};
+
+function setActiveListingPagingPage(targetIndex) {
+    let pagingElements = [...document.getElementById('tabContentsMyActiveMarketListings_links').children];
+    let currentActivePage
+    let targetActivePage;
+
+    for(let i = 0; i < pagingElements.length; i++) {
+        if(pagingElements[i].classList.contains('active')) currentActivePage = pagingElements[i];
+        if(pagingElements[i].textContent === `${targetIndex} `) targetActivePage = pagingElements[i];
+    };
+
+    if(targetActivePage) {
+        currentActivePage.classList.remove('active');
+        targetActivePage.classList.add('active');
+        return true;
+    } else {
+        return false;
+    };
+};
+
 function refreshListings() {
     let httpRequest = new XMLHttpRequest();
 
     httpRequest.onload = function() {
-        let requestResult;
-        let listingsElement = document.createElement('div');
-        listingsElement.id = 'testing_div';
-        let listingsElementContent;
 
         if(httpRequest.status === 200) {
-            requestResult = httpRequest.responseText;
+            let requestResult = httpRequest.responseText;
             requestResult = JSON.parse(requestResult);
 
             if(requestResult.hasOwnProperty('results_html')) {
-                listingsElementContent = requestResult['results_html'];
+                let listingElements = document.createElement('div');
+                listingElements.innerHTML = requestResult['results_html'];
+                listingElements = listingElements.querySelector('div#tabContentsMyActiveMarketListingsRows');
 
-                listingsElement.innerHTML = listingsElementContent;
-                listingsElement = listingsElement.querySelector('div#tabContentsMyActiveMarketListingsRows');
-                document.getElementById('tabContentsMyActiveMarketListingsRows').innerHTML = listingsElement.innerHTML;
-                /*Now make it so the start thing refreshes on the correct start value */
-                return;
+                document.getElementById('tabContentsMyActiveMarketListingsRows').innerHTML = listingElements.innerHTML;
             } else {
-                console.log('Failed to load listings: Field in JSON not found.');
+                console.log('Failed to load listings: Data in JSON not found.');
                 return;
             };
         } else {
@@ -305,7 +325,11 @@ function refreshListings() {
         };
     };
 
-    httpRequest.open('GET', 'https://steamcommunity.com/market/mylistings/?start=0&count=' + getListingsPerPage(), true);
+    let queryStartValue = (getActiveListingPagingPage() - 1) * getListingsPerPage();
+
+    console.log('queryval ' + queryStartValue);
+    
+    httpRequest.open('GET', 'https://steamcommunity.com/market/mylistings/?start=' + queryStartValue + '&count=' + getListingsPerPage(), true);
 
     httpRequest.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 
@@ -412,6 +436,8 @@ function getItemId(listingElementId) {
     return listingElementId.substring(10, listingElementId.length);
 };
 
+let canMakeAnotherRequest = true;
+
 function startSearch(prevStartValue) {
     let nameInput = document.getElementById('bGoneSearchBar').value;
     let priceInput = document.getElementById('bGonePriceInputBar').value;
@@ -457,9 +483,10 @@ function startSearch(prevStartValue) {
     if(listingsAmount > (prevStartValue + 100)) {
         getMarketListings(prevStartValue + 100, 100);
     } else {
-        //Finished search.
-        refreshListings();
-        unlockInputs();
+        //Finished search. Straight up refresh the page for now.
+        window.location.reload();
+        /*refreshListings();
+        unlockInputs();*/
     };
 };
 
