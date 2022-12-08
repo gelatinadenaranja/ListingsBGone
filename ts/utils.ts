@@ -1,3 +1,5 @@
+export type ListingDataObject = { id: string; name: string; price: string; };
+
 export function getActiveListingPagingPage() : string {
     let pagingElement : HTMLSpanElement = <HTMLSpanElement> document.getElementById('tabContentsMyActiveMarketListings_links');
     let activePage = pagingElement.querySelector('span.market_paging_pagelink.active');
@@ -33,6 +35,13 @@ export function getListingsPerPage() : number {
     return returnVal;
 };
 
+export function getRawPrice(price : string) : string {
+
+    let rawPrice : RegExpMatchArray | null = price.match(/[0-9\,\.]/g);
+    
+    return rawPrice? removeCommas(rawPrice.join('')) : '-1';
+};
+
 export function getItemId(listingElementId : string) : string {
     //Function input example: 'mylisting_4060547854836020987'
 
@@ -42,46 +51,6 @@ export function getItemId(listingElementId : string) : string {
     };
 
     return listingElementId.substring(10, listingElementId.length);
-};
-
-export function getNameInputValue() : string {
-    const inputElem : HTMLInputElement = <HTMLInputElement> document.getElementById('bGoneSearchBar');
-
-    if(!inputElem) {
-        return '';
-    };
-
-    return inputElem.value;
-};
-
-export function getPriceInputValue() : string {
-    const inputElem : HTMLInputElement = <HTMLInputElement> document.getElementById('bGonePriceInputBar');
-
-    if(!inputElem) {
-        return '-1';
-    };
-
-    return inputElem.value;
-};
-
-export function getSelectorValue() : string {
-    const selectorElem : HTMLSelectElement = <HTMLSelectElement> document.getElementById('bGonePriceInputSelector');
-
-    if(!selectorElem) {
-        return '-1';
-    };
-
-    return selectorElem.value;
-};
-
-export function clearInputFields() : void {
-    const nameInput : HTMLInputElement = <HTMLInputElement> document.getElementById('bGoneSearchBar');
-    const priceInput : HTMLInputElement = <HTMLInputElement> document.getElementById('bGonePriceInputBar');
-    const quantityInput : HTMLInputElement = <HTMLInputElement> document.getElementById('bGoneQuantityInput');
-
-    nameInput.value = '';
-    priceInput.value = '';
-    quantityInput.value = '';
 };
 
 export function removeCommas(val : string) : string {
@@ -94,15 +63,6 @@ export function removeCommas(val : string) : string {
     };
 
     return val;
-};
-
-export function getListingsAmount() : number {
-    const listingCountElem : HTMLSpanElement = <HTMLSpanElement> document.getElementById('my_market_activelistings_number');
-    let listingsAmount : number = Number.parseInt(listingCountElem.innerHTML);
-
-    if(Number.isNaN(listingsAmount)) return -1;
-
-    return listingsAmount;
 };
 
 export function getSessionIdCookie() : string {

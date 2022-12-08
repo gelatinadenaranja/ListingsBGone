@@ -1,4 +1,5 @@
-import { removeCommas, getListingsAmount } from './utils';
+import { removeCommas } from './utils';
+import { getListingsAmount } from './elementGetters';
 
 export function checkQuantityInput() : boolean {
     //Validation for 'bGoneQuantityInput' element input.
@@ -98,5 +99,35 @@ export function wereCheckboxesAdded() : boolean {
         return true;
     } else {
         return false;
+    };
+};
+
+export function checkName(nameParam : string, itemName : string) : boolean {
+    if(nameParam === '') return true;
+
+    return nameParam == itemName;
+};
+
+export function checkPrice(priceParam : number, price : number, mode : string, maxPrice : number) : boolean {
+    if(Number.isNaN(priceParam)) return true;
+
+    /*
+    0 - Equal to
+    1 - More than
+    2 - Less than
+    3 - Range
+    *///Check this function out, don't think it makes sense
+    switch (mode) {
+        case '0':
+            return priceParam === price;
+        case '1':
+            return priceParam < price;
+        case '2':
+            return priceParam > price;
+        case '3':
+            return (priceParam < price) && (price < maxPrice);
+        default:
+            console.log('Using default price search mode for some reason.');
+            return price == priceParam;
     };
 };

@@ -1,4 +1,4 @@
-import { getNameInputValue, getPriceInputValue, getSelectorValue, getListingsAmount, clearInputFields } from './utils';
+import { getNameInputValue, getPriceInputValue, getSelectorValue, getListingsAmount } from './elementGetters';
 import { checkPriceInput, checkQuantityInput } from './validationFuncs';
 import { getMarketListings } from './httpRequestFuncs';
 
@@ -29,7 +29,7 @@ export function selectAllCheckboxes() : void {
 
     const listingRowElements : HTMLCollection = listingContainer.children;
 
-    let bGoneCheckboxItems : (HTMLInputElement)[] = [];
+    const bGoneCheckboxItems : (HTMLInputElement)[] = [];
 
     const query = 'div.market_listing_row.market_recent_listing_row > label.bGoneCheckboxContainer > input[type=checkbox].bGoneCheckbox';
 
@@ -103,4 +103,14 @@ export function startSearch(prevStartValue : number | undefined) : string {
         unlockInputs();*/
         return 'endSearch';
     };
+};
+
+export function clearInputFields() : void {
+    const nameInput : HTMLInputElement = <HTMLInputElement> document.getElementById('bGoneSearchBar');
+    const priceInput : HTMLInputElement = <HTMLInputElement> document.getElementById('bGonePriceInputBar');
+    const quantityInput : HTMLInputElement = <HTMLInputElement> document.getElementById('bGoneQuantityInput');
+
+    nameInput.value = '';
+    priceInput.value = '';
+    quantityInput.value = '';
 };
