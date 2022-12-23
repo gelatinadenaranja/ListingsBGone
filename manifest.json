@@ -14,7 +14,7 @@
     {
       "css": ["css/listings_b_gone_style.css"],
 
-      "js": ["js/scm_main_page_script.js"],
+      "js": ["js/scmMainPageScript.js"],
 
       "matches": ["*://*.steamcommunity.com/market", "*://*.steamcommunity.com/market/"]
     }

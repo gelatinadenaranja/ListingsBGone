@@ -1,7 +1,7 @@
-import { removeCommas } from './utils';
-import { getListingsAmount, getSelectorValue } from './elementGetters';
 
-export function checkQuantityInput() : boolean {
+
+
+function checkQuantityInput() : boolean {
     //Validation for 'bGoneQuantityInput' element input.
     const element : HTMLInputElement = <HTMLInputElement> document.getElementById('bGoneQuantityInput');
 
@@ -19,7 +19,7 @@ export function checkQuantityInput() : boolean {
     };
 };
 
-export function checkPriceInput() : boolean {
+function checkPriceInput() : boolean {
     //Validation for 'bGonePriceInputBar' element input.
     const element : HTMLInputElement = <HTMLInputElement> document.getElementById('bGonePriceInputBar');
 
@@ -81,7 +81,7 @@ export function checkPriceInput() : boolean {
     };
 };
 
-export function wereCheckboxesAdded() : boolean {
+function wereCheckboxesAdded() : boolean {
     //Check if the checkbox elements were added to the 'tabContentsMyActiveMarketListingsRows' children already.
     const listingsContainer : HTMLDivElement = <HTMLDivElement> document.getElementById('tabContentsMyActiveMarketListingsRows');
 
@@ -101,13 +101,13 @@ export function wereCheckboxesAdded() : boolean {
     };
 };
 
-export function checkName(nameParam : string, itemName : string) : boolean {
+function checkName(nameParam : string, itemName : string) : boolean {
     if(nameParam === '') return true;
 
     return nameParam == itemName;
 };
 
-export function checkPrice(priceParam : number, price : number, mode : string, maxPrice : number) : boolean {
+function checkPrice(priceParam : number, price : number, mode : string, maxPrice : number) : boolean {
     if(Number.isNaN(priceParam)) return true;
 
     /*

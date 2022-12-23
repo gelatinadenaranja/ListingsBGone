@@ -1,8 +1,8 @@
-import { getNameInputValue, getPriceInputValue, getSelectorValue, getListingsAmount } from './elementGetters';
-import { checkPriceInput, checkQuantityInput } from './validationFuncs';
-import { getMarketListings } from './httpRequestFuncs';
 
-export function lockInputs() : void {
+
+
+
+function lockInputs() : void {
     const searchBarButton : HTMLButtonElement = <HTMLButtonElement> document.getElementById('bGoneSearchBarButton');
     searchBarButton.setAttribute('disabled', 'true');
 
@@ -19,7 +19,7 @@ export function lockInputs() : void {
     quantityInput.setAttribute('disabled', 'true');
 };
 
-export function unlockInputs() {
+function unlockInputs() {
     const searchBarButton : HTMLButtonElement = <HTMLButtonElement> document.getElementById('bGoneSearchBarButton');
     searchBarButton.disabled = false;
 
@@ -39,7 +39,7 @@ export function unlockInputs() {
     quantityInput.value = '';
 };
 
-export function selectAllCheckboxes() : void {
+function selectAllCheckboxes() : void {
     //Check all checkbox elements in the 'tabContentsMyActiveMarketListingsRows' children.
     const listingContainer : HTMLDivElement = <HTMLDivElement> document.getElementById('tabContentsMyActiveMarketListingsRows');
 
@@ -71,7 +71,7 @@ export function selectAllCheckboxes() : void {
     };
 };
 
-export function startSearch(prevStartValue : number | undefined) : string {
+function startSearch(prevStartValue : number | undefined) : string {
     let nameInput = getNameInputValue();
     let priceInput = getPriceInputValue();
 
@@ -125,7 +125,7 @@ export function startSearch(prevStartValue : number | undefined) : string {
     };
 };
 
-export function clearInputFields() : void {
+function clearInputFields() : void {
     const nameInput : HTMLInputElement = <HTMLInputElement> document.getElementById('bGoneSearchBar');
     const priceInput : HTMLInputElement = <HTMLInputElement> document.getElementById('bGonePriceInputBar');
     const quantityInput : HTMLInputElement = <HTMLInputElement> document.getElementById('bGoneQuantityInput');

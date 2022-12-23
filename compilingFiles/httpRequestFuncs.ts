@@ -1,9 +1,9 @@
-import { getActiveListingPagingPage, getListingsPerPage, getSessionIdCookie, getItemId, getRawPrice, ListingDataObject } from './utils';
-import { getNameInputValue, getPriceInputValue, getSelectorValue, getQuantityInputValue, getListingsAmount } from './elementGetters';
-import { checkName, checkPrice } from './validationFuncs';
-import { startSearch } from './elementEvents';
 
-export function refreshListings() {
+
+
+
+
+function refreshListings() {
     const httpRequest : XMLHttpRequest = new XMLHttpRequest();
 
     httpRequest.onload = function() {
@@ -45,7 +45,7 @@ export function refreshListings() {
     httpRequest.send();
 };
 
-export function removeItemListing(listingId : string, checkboxElement : HTMLInputElement | null) {
+function removeItemListing(listingId : string, checkboxElement : HTMLInputElement | null) {
     let httpRequest : XMLHttpRequest = new XMLHttpRequest();
 
     httpRequest.onload = function() {
@@ -87,7 +87,7 @@ export function removeItemListing(listingId : string, checkboxElement : HTMLInpu
     httpRequest.send('sessionid=' + getSessionIdCookie());
 };
 
-export function getMarketListings(start : number, count : number) {
+function getMarketListings(start : number, count : number) {
     if(start === undefined) start = 0;
 
     if(count === undefined) count = 10;
@@ -110,12 +110,16 @@ export function getMarketListings(start : number, count : number) {
     httpRequest.send();
 };
 
-export function parseMarketListingsData(data : string, startVal : number) {
+function parseMarketListingsData(data : string, startVal : number) {
+    let listingsDataJSON;
     let listingRowElements : HTMLCollection | undefined;
     const listingsData : ListingDataObject[] = [];
+
+    //Fix mess later
     interface dataResult {results_html : string};
     let jsonObj : any;
-    let dataResultObj : dataResult;
+    let dataResultObj : any;
+    //Fix mess later
 
     if(data !== 'null' && data.length > 0) {
         jsonObj = JSON.parse(data);
@@ -164,7 +168,7 @@ export function parseMarketListingsData(data : string, startVal : number) {
     searchMatchingListings(listingsData, startVal);
 };
 
-export function searchMatchingListings(listingsData : ListingDataObject[], startVal : number) {
+function searchMatchingListings(listingsData : ListingDataObject[], startVal : number) {
     let name : string = getNameInputValue();
     let priceInput : string = getPriceInputValue();
     let price : number;
