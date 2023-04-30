@@ -5,15 +5,30 @@ div#bGoneSearchBarContainer, div#bGoneSearchBarContainer * {
     background-color: rgb(22, 32, 45);
 }
 
-/*Input fields and buttons containers*/
+/*Input fields and containers*/
 div#bGoneSearchBarContainer > div.bGoneInputContainer {
     align-items: stretch;
     display: flex;
     padding: 10px;
 }
 
+div#bGoneSearchBarContainer > div.bGoneMiscContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+div#bGoneInfoBox {
+    display: flex;
+    align-items: center;
+}
+
+span#bGoneInfoBoxSpan {
+    padding-top: 0em;
+}
+
   /*Search bar button and select elements*/
-button#bGoneSearchBarButton, select#bGonePriceInputSelector {
+button#bGoneSearchBarButton, select#bGonePriceInputSelector, select#bGoneSettingButton {
     align-content: center !important;
     text-align: center;
     background-image: linear-gradient(rgb(132, 187, 60), rgb(81, 113, 36));
@@ -21,6 +36,10 @@ button#bGoneSearchBarButton, select#bGonePriceInputSelector {
     padding: 8px;
     height: 35px;
     width: 85px;
+}
+
+select#bGoneSettingButton {
+    align-self: flex-end;
 }
 
 button#bGoneSearchBarButton:hover, select#bGonePriceInputSelector:hover {

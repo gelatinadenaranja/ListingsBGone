@@ -15,7 +15,7 @@ export function getPriceInputValue() : string {
     return inputElem ? inputElem.value : '-1';
 };
 
-export function getSelectorValue() : string {
+export function getPriceModeSelectorValue() : string {
     const selectorElem : HTMLSelectElement = <HTMLSelectElement> document.getElementById('bGonePriceInputSelector');
 
     return selectorElem ? selectorElem.value : '-1';
@@ -34,4 +34,37 @@ export function getListingsAmount() : number {
     if(Number.isNaN(listingsAmount)) return -1;
 
     return listingsAmount;
+};
+
+export function getSearchModeSelectorValue() : string {
+    const selectorElem : HTMLSelectElement = <HTMLSelectElement> document.getElementById('bGoneSettingButton');
+    
+    return selectorElem ? selectorElem.value : '-1';
+};
+
+export function getLoadingIconElem() : HTMLImageElement | null {
+    const loadingIconElem : HTMLImageElement | null = <HTMLImageElement> document.getElementById('bGoneLoadingIcon');
+
+    return loadingIconElem ? loadingIconElem : null;
+};
+
+export function getInfoSpanElem() : HTMLSpanElement | null {
+    const infoSpanElem : HTMLSpanElement | null = <HTMLSpanElement> document.getElementById('bGoneInfoBoxSpan');
+
+    return infoSpanElem ? infoSpanElem : null;
+};
+
+export function getCountingSpanElem() : HTMLSpanElement | null {
+    const countingSpan : HTMLSpanElement | null = <HTMLSpanElement> document.getElementById('bGoneCountingSpan');
+
+    return countingSpan ? countingSpan : null;
+};
+
+export function getCountingSpanValue() : number {
+    const countingSpan : HTMLSpanElement = <HTMLSpanElement> document.getElementById('bGoneCountingSpan');
+    let count : number = Number.parseInt(countingSpan.innerHTML);
+
+    if(Number.isNaN(count)) return 0;
+
+    return count;
 };

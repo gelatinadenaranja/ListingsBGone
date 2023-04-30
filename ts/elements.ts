@@ -1,8 +1,6 @@
-import { selectAllCheckboxes, startSearch } from './elementEvents';
-import { getListingsPerPage, getItemId } from './utils';
+import { priceInputBarOnKeyDownEvt, quantityInputBarOnKeyDownEvt, removeCheckedItemsBtnEvt, selectAllCheckboxes, changeSearchMode, startSearch } from './elementEvents';
 import { wereCheckboxesAdded } from './validationFuncs';
-import { refreshListings, removeItemListing } from './httpRequestFuncs';
-import { getSelectorValue } from './elementGetters';
+import { refreshListings } from './httpRequestFuncs';
 
 export function addExtensionElements() {
     const listingsContentTab : HTMLDivElement = <HTMLDivElement> document.getElementById('tabContentsMyListings');
@@ -41,7 +39,7 @@ export function addExtensionElements() {
     searchBar.type = 'text';
     searchBar.id = 'bGoneSearchBar';
     searchBar.className = 'bGoneInputBar';
-    searchBar.placeholder = 'Enter the item you wish to remove';
+    searchBar.placeholder = 'Enter the full name of the item';
     searchBarContainer.append(searchBar);
 
     const searchBarButton : HTMLButtonElement = document.createElement('button');
@@ -61,25 +59,8 @@ export function addExtensionElements() {
     priceInputBar.type = 'text';
     priceInputBar.id = 'bGonePriceInputBar';
     priceInputBar.className = 'bGoneInputBar';
-    priceInputBar.placeholder = 'Enter the price of the items you want to remove';
-    priceInputBar.onkeydown = function(event) {
-        //Only allow desired inputs in the text field.
-        let selectorValue = getSelectorValue();
-        let validInputs = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'Backspace'];
-    
-        //When selectorValue === 'Range' a '-' gets added because that's when a range is used in the search.
-        if(selectorValue === 'Range') {
-            validInputs.push('-');
-
-            if(!validInputs.includes(event.key)) {
-                event.preventDefault();
-            };
-        } else {
-            if(!validInputs.includes(event.key)) {
-                event.preventDefault();
-            };
-        }
-    };
+    priceInputBar.placeholder = 'Enter the price of the listings you want to match';
+    priceInputBar.onkeydown = priceInputBarOnKeyDownEvt;
     priceInputBarContainer.append(priceInputBar);
     priceInputBarContainer.append(priceInputSelector);
 
@@ -113,22 +94,53 @@ export function addExtensionElements() {
     quantityInputBar.className = 'bGoneInputBar';
     quantityInputBar.style.display = 'block';
     quantityInputBar.placeholder = 'Enter the quantity of matching listings you want to remove';
-    quantityInputBar.onkeydown = function(event) {
-        //Only allow desired inputs in the text field.
-        let validInputs = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'Backspace'];
-    
-        if(!validInputs.includes(event.key)) {
-            event.preventDefault();
-        };
-    };
+    quantityInputBar.onkeydown = quantityInputBarOnKeyDownEvt;
     quantityInputContainer.append(quantityInputBar);
 
     /*TESTING BUTTONNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN*/
     /*let tstbutton = document.createElement('button');
     tstbutton.id = 'tstbutton';
+    tstbutton.setAttribute('style', 'height: 5em; width: 5em;');
     tstbutton.textContent = 'CLICK ME SON!';
-    tstbutton.onclick = setActiveListingPagingPage;
+    tstbutton.addEventListener("click", () => {console.log("KACHOW")});
     bGoneSearchBarContainer.append(tstbutton);*/
+
+    const menuBoxContainer : HTMLDivElement = document.createElement('div');
+    menuBoxContainer.className = 'bGoneMiscContainer';
+    bGoneSearchBarContainer.append(menuBoxContainer);
+
+    const infoBox : HTMLDivElement = document.createElement('div');
+    infoBox.id = 'bGoneInfoBox';
+    menuBoxContainer.append(infoBox);
+
+    const loadingIcon : HTMLImageElement = document.createElement('img');
+    loadingIcon.id = 'bGoneLoadingIcon'
+    loadingIcon.src = chrome.runtime.getURL('images/loading_icon.gif');
+    loadingIcon.setAttribute('style', "display: none;");
+    infoBox.append(loadingIcon);
+
+    const infoBoxSpan : HTMLSpanElement = document.createElement('span');
+    infoBoxSpan.id = 'bGoneInfoBoxSpan';
+    infoBoxSpan.textContent = '';
+    infoBox.append(infoBoxSpan);
+
+    const infoCountingSpan : HTMLSpanElement = document.createElement('span');
+    infoCountingSpan.id = 'bGoneCountingSpan';
+    infoCountingSpan.textContent = '';
+    infoBox.append(infoCountingSpan);
+
+    const settingMenu : HTMLSelectElement = document.createElement('select');
+    settingMenu.id = 'bGoneSettingButton';
+    settingMenu.addEventListener('change', changeSearchMode);
+    menuBoxContainer.append(settingMenu);
+
+    const settingRemoveListing : HTMLOptionElement = document.createElement('option');
+    settingRemoveListing.textContent = 'Remove listings';
+    settingMenu.append(settingRemoveListing);
+
+    const settingCountListing : HTMLOptionElement = document.createElement('option');
+    settingCountListing.textContent = 'Count listings';
+    settingMenu.append(settingCountListing);
 };
 
 export function addSelectAllCheckBoxContainer() {
@@ -166,33 +178,7 @@ export function addSelectAllCheckBoxContainer() {
     const removeCheckedItems : HTMLButtonElement = document.createElement('button');
     removeCheckedItems.id = 'bGoneRemoveCheckedItems';
     removeCheckedItems.textContent = 'Remove checked items';
-    removeCheckedItems.onclick = function() {
-        /* Remove all listings where the checkbox elements in the 'tabContentsMyActiveMarketListingsRows'
-         * children are checked and the children are visible. Then if no listings are visible, refresh. */
-        const listingContainer : HTMLDivElement = <HTMLDivElement> document.getElementById('tabContentsMyActiveMarketListingsRows');
-        const listingRowElements : HTMLCollection = <HTMLCollection> listingContainer.children;
-        const querySelectorString = 'div.market_listing_row.market_recent_listing_row > label.bGoneCheckboxContainer > input[type=checkbox].bGoneCheckbox:checked';
-        const selectAllCheckbox : HTMLInputElement = <HTMLInputElement> document.getElementById('bGoneSelectAllCheckbox');
-        let visibleListings = getListingsPerPage();
-
-        for(let i = 0; i < listingRowElements.length; i++) {
-            if(listingRowElements[i].getAttribute('style') !== 'display: none;') {
-                if(listingRowElements[i].querySelector(querySelectorString)) {
-                    const checkboxElem : HTMLInputElement = <HTMLInputElement> listingRowElements[i].querySelector(querySelectorString);
-                    removeItemListing(getItemId(listingRowElements[i].id), checkboxElem);
-                    visibleListings--;
-                };
-            } else {
-                visibleListings--;
-            };
-        };
-
-        if(visibleListings <= 0) {
-            refreshListings();
-        };
-
-        selectAllCheckbox.checked = false;
-    };
+    removeCheckedItems.onclick = removeCheckedItemsBtnEvt;
     buttonContainer.append(removeCheckedItems);
 
     const removeCheckedItemsIcon : HTMLImageElement = document.createElement('img');

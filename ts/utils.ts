@@ -1,4 +1,16 @@
+import { getCountingSpanElem, getLoadingIconElem } from './elementGetters';
+
 export type ListingDataObject = { id: string; name: string; price: string; };
+
+let listingsCounter : number = 0;
+
+export function getListingsCounter() : number {
+    return listingsCounter;
+};
+
+export function setListingsCounter(val : number) : void {
+    listingsCounter = val;
+};
 
 export function getActiveListingPagingPage() : string {
     let pagingElement : HTMLSpanElement = <HTMLSpanElement> document.getElementById('tabContentsMyActiveMarketListings_links');
@@ -78,4 +90,37 @@ export function getSessionIdCookie() : string {
     };
 
     return cookies.substring(cookieFirstChar, cookieLastChar);
+};
+
+export function setCountingSpanValue(val : number) : boolean {
+    const countingSpanElem : HTMLSpanElement | null = getCountingSpanElem();
+
+    if(countingSpanElem === null) {
+        const infoBox : HTMLDivElement = <HTMLDivElement> document.getElementById('bGoneInfoBox');
+        if(infoBox === null) {
+            console.log('Element bGoneInfoBox not found.');
+            return false;
+        };
+
+        const infoCountingSpan : HTMLSpanElement = document.createElement('span');
+        infoCountingSpan.id = 'bGoneCountingSpan';
+        infoCountingSpan.textContent = '0';
+        infoBox.append(infoCountingSpan);
+        return true;
+    };
+
+    countingSpanElem.textContent = val.toString();
+    return true;
+};
+
+export function hideLoadingIcon() : void {
+    const loadingIconElem : HTMLImageElement | null = getLoadingIconElem();
+
+    if(loadingIconElem === null) return;
+
+    loadingIconElem.setAttribute('style', 'display: none;');
+};
+
+export function showPopUp(message : string) : void {
+    alert(message);
 };

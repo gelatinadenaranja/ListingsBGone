@@ -1,6 +1,63 @@
-import { getNameInputValue, getPriceInputValue, getSelectorValue, getListingsAmount } from './elementGetters';
+import { getNameInputValue, getPriceInputValue, getPriceModeSelectorValue, getSearchModeSelectorValue, getListingsAmount, getCountingSpanElem, getLoadingIconElem, getInfoSpanElem } from './elementGetters';
 import { checkPriceInput, checkQuantityInput } from './validationFuncs';
-import { getMarketListings } from './httpRequestFuncs';
+import { getMarketListings, removeItemListing, refreshListings } from './httpRequestFuncs';
+import { getListingsPerPage, getItemId, setListingsCounter, hideLoadingIcon, showPopUp, setCountingSpanValue, getListingsCounter } from './utils';
+
+export const priceInputBarOnKeyDownEvt = function(event : KeyboardEvent) {
+    //Only allow desired inputs in the text field.
+    let selectorValue = getPriceModeSelectorValue();
+    let validInputs = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'Backspace'];
+
+    //When selectorValue === 'Range' a '-' gets added because that's when a range is used in the search.
+    if(selectorValue === 'Range') {
+        validInputs.push('-');
+
+        if(!validInputs.includes(event.key)) {
+            event.preventDefault();
+        };
+    } else {
+        if(!validInputs.includes(event.key)) {
+            event.preventDefault();
+        };
+    }
+};
+
+export const quantityInputBarOnKeyDownEvt = function(event : KeyboardEvent) {
+    //Only allow desired inputs in the text field.
+    let validInputs = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'Backspace'];
+
+    if(!validInputs.includes(event.key)) {
+        event.preventDefault();
+    };
+};
+
+export const removeCheckedItemsBtnEvt = function() {
+    /* Remove all listings where the checkbox elements in the 'tabContentsMyActiveMarketListingsRows'
+     * children are checked and the children are visible. Then if no listings are visible, refresh. */
+    const listingContainer : HTMLDivElement = <HTMLDivElement> document.getElementById('tabContentsMyActiveMarketListingsRows');
+    const listingRowElements : HTMLCollection = <HTMLCollection> listingContainer.children;
+    const querySelectorString = 'div.market_listing_row.market_recent_listing_row > label.bGoneCheckboxContainer > input[type=checkbox].bGoneCheckbox:checked';
+    const selectAllCheckbox : HTMLInputElement = <HTMLInputElement> document.getElementById('bGoneSelectAllCheckbox');
+    let visibleListings = getListingsPerPage();
+
+    for(let i = 0; i < listingRowElements.length; i++) {
+        if(listingRowElements[i].getAttribute('style') !== 'display: none;') {
+            if(listingRowElements[i].querySelector(querySelectorString)) {
+                const checkboxElem : HTMLInputElement = <HTMLInputElement> listingRowElements[i].querySelector(querySelectorString);
+                removeItemListing(getItemId(listingRowElements[i].id), checkboxElem, false);
+                visibleListings--;
+            };
+        } else {
+            visibleListings--;
+        };
+    };
+
+    if(visibleListings <= 0) {
+        refreshListings();
+    };
+
+    selectAllCheckbox.checked = false;
+};
 
 export function lockInputs() : void {
     const searchBarButton : HTMLButtonElement = <HTMLButtonElement> document.getElementById('bGoneSearchBarButton');
@@ -71,6 +128,32 @@ export function selectAllCheckboxes() : void {
     };
 };
 
+export function showInfoBox() : boolean {
+    const loadingIconElem : HTMLImageElement | null = getLoadingIconElem();
+    const infoSpanElem : HTMLSpanElement | null = getInfoSpanElem();
+    const countingSpanElem : HTMLSpanElement | null = getCountingSpanElem();//Prolly not using this
+
+    if(infoSpanElem == null || loadingIconElem == null || countingSpanElem == null) {
+        console.log('showInfoBox could not find one or more required elements.');
+        return false;
+    };
+
+    const searchMode : string = getSearchModeSelectorValue();
+
+    if(searchMode === 'Remove listings') {
+        infoSpanElem.textContent = 'Listings removed: ';
+    } else if(searchMode === 'Count listings') {
+        infoSpanElem.textContent = 'Listings found: ';
+    } else {
+        infoSpanElem.textContent = 'Error, invalid bGoneSettingButton value';
+        return false;
+    };
+
+    loadingIconElem.setAttribute('style', '');
+
+    return true;
+};
+
 export function startSearch(prevStartValue : number | undefined) : string {
     let nameInput = getNameInputValue();
     let priceInput = getPriceInputValue();
@@ -84,7 +167,7 @@ export function startSearch(prevStartValue : number | undefined) : string {
         let isPriceValid : boolean = checkPriceInput();
 
         if(!isPriceValid) {
-            let priceSearchMode = getSelectorValue();
+            let priceSearchMode = getPriceModeSelectorValue();
 
             if(priceSearchMode === 'Range') {
                 alert('Input price range is not valid.\nFirst write the minimum value, then a dash (-) and then the maximum value.\nExample: 1.05-3');
@@ -105,6 +188,9 @@ export function startSearch(prevStartValue : number | undefined) : string {
 
     //Here starts the first iteration of the search.
     if(prevStartValue === undefined) {
+        setCountingSpanValue(0);
+        setListingsCounter(0);
+        showInfoBox();
         lockInputs();
         getMarketListings(0, 100);
         return 'startedSearch';
@@ -121,6 +207,11 @@ export function startSearch(prevStartValue : number | undefined) : string {
         //window.location.reload();
         //refreshListings();
         unlockInputs();
+        if(getSearchModeSelectorValue() == 'Count listings') {
+            hideLoadingIcon();
+            showPopUp('Found ' + getListingsCounter() + ' matches.');
+            setCountingSpanValue(getListingsCounter());
+        };
         return 'endSearch';
     };
 };
@@ -133,4 +224,20 @@ export function clearInputFields() : void {
     nameInput.value = '';
     priceInput.value = '';
     quantityInput.value = '';
+};
+
+export const changeSearchMode = function() {
+    const searchButtonElem : HTMLButtonElement = <HTMLButtonElement> document.getElementById('bGoneSearchBarButton');
+    const searchModeSelect : HTMLSelectElement = <HTMLSelectElement> document.getElementById('bGoneSettingButton');
+    const quantityInput : HTMLInputElement = <HTMLInputElement> document.getElementById('bGoneQuantityInput');
+
+    if(searchButtonElem && searchModeSelect && quantityInput) {
+        if(searchModeSelect.value === 'Count listings') {
+            searchButtonElem.textContent = 'Count';
+            quantityInput.setAttribute('style', 'display: none');
+        } else {
+            searchButtonElem.textContent = 'Remove';
+            quantityInput.setAttribute('style', '');
+        };
+    };
 };

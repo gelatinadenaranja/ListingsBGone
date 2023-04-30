@@ -1,5 +1,5 @@
 import { removeCommas } from './utils';
-import { getListingsAmount, getSelectorValue } from './elementGetters';
+import { getListingsAmount, getPriceModeSelectorValue } from './elementGetters';
 
 export function checkQuantityInput() : boolean {
     //Validation for 'bGoneQuantityInput' element input.
@@ -27,7 +27,7 @@ export function checkPriceInput() : boolean {
         return true;
     };
 
-    const selectorValue : string = getSelectorValue();
+    const selectorValue : string = getPriceModeSelectorValue();
     let value : number;
 
     if(selectorValue !== 'Range') {
