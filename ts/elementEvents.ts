@@ -206,6 +206,7 @@ export function startSearch(prevStartValue : number | undefined) : string {
         //Finished search. Straight up refresh the page for now.
         //window.location.reload();
         //refreshListings();
+        //------------------------TIS IS VERY IMPORTANT ADD FUNC FOR CHECKING IF LISTINGS REMOVALS FINISHED HERE THEN DO STUFF
         unlockInputs();
         if(getSearchModeSelectorValue() == 'Count listings') {
             hideLoadingIcon();

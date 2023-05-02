@@ -80,10 +80,10 @@ export function removeItemListing(listingId : string, checkboxElement : HTMLInpu
            if(countRemoval) {
             if(Number.isNaN(countVal)) {
                 setCountingSpanValue(0);
-           } else {
+            } else {
                 setListingsCounter(countVal + 1);
                 setCountingSpanValue(countVal + 1);
-           };
+            };
            };
         } else {
             console.log("Listing couldn't be removed.Error: " + httpRequest.status)

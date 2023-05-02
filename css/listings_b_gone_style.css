@@ -21,6 +21,7 @@ div#bGoneSearchBarContainer > div.bGoneMiscContainer {
 div#bGoneInfoBox {
     display: flex;
     align-items: center;
+    padding-left: 0.5em;
 }
 
 span#bGoneInfoBoxSpan {

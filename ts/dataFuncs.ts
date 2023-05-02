@@ -75,6 +75,7 @@ export function searchMatchingListings(listingsData : ListingDataObject[], start
         price = Number.parseFloat(priceInput);
     };
 
+    //WORK HERE FOR THE SUCCESSFUL/FAILED REQUESTS
     for(let i = 0; i < listingsData.length; i++) {
 
         if(checkName(name, listingsData[i].name) && checkPrice(price, Number.parseFloat(listingsData[i].price), priceSearchMode, maxPrice)) {
@@ -83,6 +84,7 @@ export function searchMatchingListings(listingsData : ListingDataObject[], start
             if(getSearchModeSelectorValue() == 'Remove listings') {
                 removeItemListing(listingsData[i].id, null, true);
             } else {
+                //This is for counting matching listings when such mode is active
                 setListingsCounter(getListingsCounter() + 1);
             };
 
