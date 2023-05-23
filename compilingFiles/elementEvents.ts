@@ -1,9 +1,9 @@
-import { getNameInputValue, getPriceInputValue, getPriceModeSelectorValue, getSearchModeSelectorValue, getListingsAmount, getCountingSpanElem, getLoadingIconElem, getInfoSpanElem } from './elementGetters';
-import { checkPriceInput, checkQuantityInput } from './validationFuncs';
-import { getMarketListings, removeItemListing, refreshListings } from './httpRequestFuncs';
-import { getListingsPerPage, getItemId, setListingsCounter, hideLoadingIcon, showPopUp, setCountingSpanValue, getListingsCounter, restartSearchAfterRequests } from './utils';
 
-export const priceInputBarOnKeyDownEvt = function(event : KeyboardEvent) {
+
+
+
+
+const priceInputBarOnKeyDownEvt = function(event : KeyboardEvent) {
     //Only allow desired inputs in the text field.
     let selectorValue = getPriceModeSelectorValue();
     let validInputs = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'Backspace'];
@@ -22,7 +22,7 @@ export const priceInputBarOnKeyDownEvt = function(event : KeyboardEvent) {
     }
 };
 
-export const quantityInputBarOnKeyDownEvt = function(event : KeyboardEvent) {
+const quantityInputBarOnKeyDownEvt = function(event : KeyboardEvent) {
     //Only allow desired inputs in the text field.
     let validInputs = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'Backspace'];
 
@@ -31,7 +31,7 @@ export const quantityInputBarOnKeyDownEvt = function(event : KeyboardEvent) {
     };
 };
 
-export const removeCheckedItemsBtnEvt = function() {
+const removeCheckedItemsBtnEvt = function() {
     /* Remove all listings where the checkbox elements in the 'tabContentsMyActiveMarketListingsRows'
      * children are checked and the children are visible. Then if no listings are visible, refresh. */
     const listingContainer : HTMLDivElement = <HTMLDivElement> document.getElementById('tabContentsMyActiveMarketListingsRows');
@@ -59,7 +59,7 @@ export const removeCheckedItemsBtnEvt = function() {
     selectAllCheckbox.checked = false;
 };
 
-export function lockInputs() : void {
+function lockInputs() : void {
     const searchBarButton : HTMLButtonElement = <HTMLButtonElement> document.getElementById('bGoneSearchBarButton');
     searchBarButton.setAttribute('disabled', 'true');
 
@@ -79,7 +79,7 @@ export function lockInputs() : void {
     searchModeSelector.setAttribute('disabled', 'true');
 };
 
-export function unlockInputs() {
+function unlockInputs() {
     const searchBarButton : HTMLButtonElement = <HTMLButtonElement> document.getElementById('bGoneSearchBarButton');
     searchBarButton.disabled = false;
 
@@ -102,7 +102,7 @@ export function unlockInputs() {
     searchModeSelector.disabled = false;
 };
 
-export function selectAllCheckboxes() : void {
+function selectAllCheckboxes() : void {
     //Check all checkbox elements in the 'tabContentsMyActiveMarketListingsRows' children.
     const listingContainer : HTMLDivElement = <HTMLDivElement> document.getElementById('tabContentsMyActiveMarketListingsRows');
 
@@ -134,7 +134,7 @@ export function selectAllCheckboxes() : void {
     };
 };
 
-export function showInfoBox() : boolean {
+function showInfoBox() : boolean {
     const loadingIconElem : HTMLImageElement | null = getLoadingIconElem();
     const infoSpanElem : HTMLSpanElement | null = getInfoSpanElem();
     const countingSpanElem : HTMLSpanElement | null = getCountingSpanElem();//Prolly not using this
@@ -160,7 +160,7 @@ export function showInfoBox() : boolean {
     return true;
 };
 
-export function startSearch(prevStartValue : number | undefined) : string {
+function startSearch(prevStartValue : number | undefined) : string {
     let nameInput = getNameInputValue();
     let priceInput = getPriceInputValue();
 
@@ -231,7 +231,7 @@ export function startSearch(prevStartValue : number | undefined) : string {
     };
 };
 
-export function clearInputFields() : void {
+function clearInputFields() : void {
     const nameInput : HTMLInputElement = <HTMLInputElement> document.getElementById('bGoneSearchBar');
     const priceInput : HTMLInputElement = <HTMLInputElement> document.getElementById('bGonePriceInputBar');
     const quantityInput : HTMLInputElement = <HTMLInputElement> document.getElementById('bGoneQuantityInput');
@@ -241,7 +241,7 @@ export function clearInputFields() : void {
     quantityInput.value = '';
 };
 
-export const changeSearchMode = function() {
+const changeSearchMode = function() {
     const searchButtonElem : HTMLButtonElement = <HTMLButtonElement> document.getElementById('bGoneSearchBarButton');
     const searchModeSelect : HTMLSelectElement = <HTMLSelectElement> document.getElementById('bGoneSettingButton');
     const quantityInput : HTMLInputElement = <HTMLInputElement> document.getElementById('bGoneQuantityInput');

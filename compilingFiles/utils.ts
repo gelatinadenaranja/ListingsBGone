@@ -1,39 +1,39 @@
-import { getCountingSpanElem, getLoadingIconElem } from './elementGetters';
-import { unlockInputs } from './elementEvents';
 
-export type ListingDataObject = { id: string; name: string; price: string; };
+
+
+type ListingDataObject = { id: string; name: string; price: string; };
 
 let listingsCounter : number = 0;
 
-export function getListingsCounter() : number {
+function getListingsCounter() : number {
     return listingsCounter;
 };
 
-export function setListingsCounter(val : number) : void {
+function setListingsCounter(val : number) : void {
     listingsCounter = val;
 };
 
 let successfulRequests : number = 0;
 
-export function getSuccessfulRequests() : number {
+function getSuccessfulRequests() : number {
     return successfulRequests;
 };
 
-export function setSuccessfulRequests(val : number) : void {
+function setSuccessfulRequests(val : number) : void {
     successfulRequests = val;
 };
 
 let failedRequests : number = 0;
 
-export function getFailedRequests() : number {
+function getFailedRequests() : number {
     return failedRequests;
 };
 
-export function setFailedRequests(val : number) : void {
+function setFailedRequests(val : number) : void {
     failedRequests = val;
 };
 
-export function restartSearchAfterRequests() : void {
+function restartSearchAfterRequests() : void {
     const intervalID = setInterval( () => {
         if(listingsCounter === (getSuccessfulRequests() + getFailedRequests())) {
             clearInterval(intervalID);
@@ -52,7 +52,7 @@ export function restartSearchAfterRequests() : void {
     }, 500);
 };
 
-export function getActiveListingPagingPage() : string {
+function getActiveListingPagingPage() : string {
     let pagingElement : HTMLSpanElement = <HTMLSpanElement> document.getElementById('tabContentsMyActiveMarketListings_links');
     let activePage = pagingElement.querySelector('span.market_paging_pagelink.active');
 
@@ -63,7 +63,7 @@ export function getActiveListingPagingPage() : string {
     return activePage.innerHTML;
 };
 
-export function getListingsPerPage() : number {
+function getListingsPerPage() : number {
     let listingsPerPageStr : string = '';
     let returnVal : number = 0;
     const quantityOption10 : HTMLLinkElement = <HTMLLinkElement> document.getElementById('my_listing_pagesize_10');
@@ -87,14 +87,14 @@ export function getListingsPerPage() : number {
     return returnVal;
 };
 
-export function getRawPrice(price : string) : string {
+function getRawPrice(price : string) : string {
 
     let rawPrice : RegExpMatchArray | null = price.match(/[0-9\,\.]/g);
     
     return rawPrice? removeCommas(rawPrice.join('')) : '-1';
 };
 
-export function getItemId(listingElementId : string) : string {
+function getItemId(listingElementId : string) : string {
     //Function input example: 'mylisting_4060547854836020987'
 
     if(!listingElementId) {
@@ -105,7 +105,7 @@ export function getItemId(listingElementId : string) : string {
     return listingElementId.substring(10, listingElementId.length);
 };
 
-export function removeCommas(val : string) : string {
+function removeCommas(val : string) : string {
     for(let i = 0; i < val.length; i++) {
         if(val.charAt(i) === ',') {
             val = val.replace(/\./g, '');
@@ -117,7 +117,7 @@ export function removeCommas(val : string) : string {
     return val;
 };
 
-export function getSessionIdCookie() : string {
+function getSessionIdCookie() : string {
     let cookies : string = document.cookie;
     let cookieFirstChar : number = cookies.indexOf('sessionid=') + 10;
     let cookieLastChar : number = cookieFirstChar;
@@ -132,7 +132,7 @@ export function getSessionIdCookie() : string {
     return cookies.substring(cookieFirstChar, cookieLastChar);
 };
 
-export function setCountingSpanValue(val : number) : boolean {
+function setCountingSpanValue(val : number) : boolean {
     const countingSpanElem : HTMLSpanElement | null = getCountingSpanElem();
 
     if(countingSpanElem === null) {
@@ -153,7 +153,7 @@ export function setCountingSpanValue(val : number) : boolean {
     return true;
 };
 
-export function hideLoadingIcon() : void {
+function hideLoadingIcon() : void {
     const loadingIconElem : HTMLImageElement | null = getLoadingIconElem();
 
     if(loadingIconElem === null) return;
@@ -161,6 +161,6 @@ export function hideLoadingIcon() : void {
     loadingIconElem.setAttribute('style', 'display: none;');
 };
 
-export function showPopUp(message : string) : void {
+function showPopUp(message : string) : void {
     alert(message);
 };

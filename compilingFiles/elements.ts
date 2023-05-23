@@ -1,8 +1,8 @@
-import { priceInputBarOnKeyDownEvt, quantityInputBarOnKeyDownEvt, removeCheckedItemsBtnEvt, selectAllCheckboxes, changeSearchMode, startSearch } from './elementEvents';
-import { wereCheckboxesAdded } from './validationFuncs';
-import { refreshListings } from './httpRequestFuncs';
 
-export function addExtensionElements() {
+
+
+
+function addExtensionElements() {
     const listingsContentTab : HTMLDivElement = <HTMLDivElement> document.getElementById('tabContentsMyListings');
     
     //Observer to check whenever tabContentsMyListings' child elements change.
@@ -147,7 +147,7 @@ export function addExtensionElements() {
     settingMenu.append(settingCountListing);
 };
 
-export function addSelectAllCheckBoxContainer() {
+function addSelectAllCheckBoxContainer() {
     //Add a div to manage the currently visible listings in the 'tabContentsMyActiveMarketListingsRows' element.
     const activeListingsTable : HTMLDivElement = <HTMLDivElement> document.getElementById('tabContentsMyActiveMarketListingsTable');
 
@@ -192,7 +192,7 @@ export function addSelectAllCheckBoxContainer() {
     activeListingsTable.insertBefore(selectAllCheckBoxContainer, document.getElementById('tabContentsMyActiveMarketListingsRows'));
 };
 
-export function addListingCheckboxes() { 
+function addListingCheckboxes() { 
     //Add the checkbox elements to 'tabContentsMyActiveMarketListingsRows' children.
     const listingRow : HTMLDivElement = <HTMLDivElement> document.getElementById('tabContentsMyActiveMarketListingsRows');
     const listingRowElements : HTMLCollection = <HTMLCollection> listingRow.children;
@@ -211,7 +211,7 @@ export function addListingCheckboxes() {
     };
 };
 
-export function addListingsElementObserver() {
+function addListingsElementObserver() {
     //Observer to check whenever 'tabContentsMyActiveMarketListingsRows' changes, which is when the user selects another item page.
     const listingsContainer : HTMLDivElement = <HTMLDivElement> document.getElementById('tabContentsMyActiveMarketListingsRows');
 

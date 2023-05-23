@@ -1,10 +1,10 @@
-import { getItemId, getRawPrice, ListingDataObject, setListingsCounter, getListingsCounter } from './utils';
-import { getNameInputValue, getPriceInputValue, getPriceModeSelectorValue, getQuantityInputValue, getListingsAmount, getSearchModeSelectorValue } from './elementGetters';
-import { removeItemListing } from './httpRequestFuncs';
-import { checkName, checkPrice } from './validationFuncs';
-import { startSearch } from './elementEvents';
 
-export function parseMarketListingsData(data : string, startVal : number) {
+
+
+
+
+
+function parseMarketListingsData(data : string, startVal : number) {
     let listingRowElements : HTMLCollection | undefined;
     const listingsData : ListingDataObject[] = [];
     interface dataResult {results_html : string};
@@ -58,7 +58,7 @@ export function parseMarketListingsData(data : string, startVal : number) {
     searchMatchingListings(listingsData, startVal);
 };
 
-export function searchMatchingListings(listingsData : ListingDataObject[], startVal : number) {
+function searchMatchingListings(listingsData : ListingDataObject[], startVal : number) {
     let name : string = getNameInputValue();
     let priceInput : string = getPriceInputValue();
     let price : number;

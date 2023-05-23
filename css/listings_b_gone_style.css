@@ -41,18 +41,19 @@ button#bGoneSearchBarButton, select#bGonePriceInputSelector, select#bGoneSetting
 
 select#bGoneSettingButton {
     align-self: flex-end;
+    width: 9em !important;
 }
 
-button#bGoneSearchBarButton:hover, select#bGonePriceInputSelector:hover {
+button#bGoneSearchBarButton:hover, select#bGonePriceInputSelector:hover, select#bGoneSettingButton:hover {
     background-image: linear-gradient(hsl(86, 51%, 35%), rgb(63, 89, 28));
 }
 
-button#bGoneSearchBarButton:active, select#bGonePriceInputSelector:active {
+button#bGoneSearchBarButton:active, select#bGonePriceInputSelector:active, select#bGoneSettingButton:active {
     background-image: none;
     background-color: rgb(181, 216, 137) !important;
 }
 
-button#bGoneSearchBarButton:disabled, select#bGonePriceInputSelector:disabled {
+button#bGoneSearchBarButton:disabled, select#bGonePriceInputSelector:disabled, select#bGoneSettingButton:disabled {
     background-image: linear-gradient(rgb(84, 117, 38), rgb(43, 60, 19));
 }
   /*Search bar input fields*/

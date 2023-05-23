@@ -1,8 +1,8 @@
-import { getActiveListingPagingPage, getListingsPerPage, getSessionIdCookie, getSuccessfulRequests, setSuccessfulRequests, getFailedRequests, setFailedRequests } from './utils';
-import { getListingsAmount } from './elementGetters';
-import { parseMarketListingsData } from './dataFuncs'
 
-export function refreshListings() {
+
+
+
+function refreshListings() {
     const httpRequest : XMLHttpRequest = new XMLHttpRequest();
 
     httpRequest.onload = function() {
@@ -44,7 +44,7 @@ export function refreshListings() {
     httpRequest.send();
 };
 
-export function removeItemListing(listingId : string, checkboxElement : HTMLInputElement | null, countRemoval : boolean) {
+function removeItemListing(listingId : string, checkboxElement : HTMLInputElement | null, countRemoval : boolean) {
     let httpRequest : XMLHttpRequest = new XMLHttpRequest();
 
     httpRequest.onload = function() {
@@ -95,7 +95,7 @@ export function removeItemListing(listingId : string, checkboxElement : HTMLInpu
     
 };
 
-export function getMarketListings(start : number, count : number) {
+function getMarketListings(start : number, count : number) {
     if(start === undefined) start = 0;
 
     if(count === undefined) count = 10;

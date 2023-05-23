@@ -75,11 +75,10 @@ function searchMatchingListings(listingsData, startVal) {
             if (getSearchModeSelectorValue() == 'Remove listings') {
                 removeItemListing(listingsData[i].id, null, true);
             }
-            else {
-                setListingsCounter(getListingsCounter() + 1);
-            }
             ;
-            if (!Number.isNaN(matchingListingsQuantity)) {
+            //This counts the amount of matching listings
+            setListingsCounter(getListingsCounter() + 1);
+            if (!Number.isNaN(matchingListingsQuantity) && getSearchModeSelectorValue() != 'Remove listings') {
                 if (matchingListingsQuantity > 1) {
                     matchingListingsQuantity--;
                 }
@@ -171,6 +170,8 @@ function lockInputs() {
     priceInputSelector.setAttribute('disabled', 'true');
     const quantityInput = document.getElementById('bGoneQuantityInput');
     quantityInput.setAttribute('disabled', 'true');
+    const searchModeSelector = document.getElementById('bGoneSettingButton');
+    searchModeSelector.setAttribute('disabled', 'true');
 }
 ;
 function unlockInputs() {
@@ -187,6 +188,8 @@ function unlockInputs() {
     const quantityInput = document.getElementById('bGoneQuantityInput');
     quantityInput.disabled = false;
     quantityInput.value = '';
+    const searchModeSelector = document.getElementById('bGoneSettingButton');
+    searchModeSelector.disabled = false;
 }
 ;
 function selectAllCheckboxes() {
@@ -295,14 +298,22 @@ function startSearch(prevStartValue) {
         return 'continueSearch';
     }
     else {
+        //console.log("Succesful requests: " + getSuccessfulRequests());
+        //console.log("Failed requests: " + getFailedRequests());
         //Finished search. Straight up refresh the page for now.
         //window.location.reload();
         //refreshListings();
-        unlockInputs();
+        //----------------------TIS IS VERY IMPORTANT ADD FUNC FOR CHECKING IF LISTINGS REMOVALS FINISHED HERE THEN DO STUFF
+        //Do something like if RemoveMode trigger interval for waiting - ('member to reset all the used counters)
         if (getSearchModeSelectorValue() == 'Count listings') {
+            unlockInputs();
             hideLoadingIcon();
             showPopUp('Found ' + getListingsCounter() + ' matches.');
             setCountingSpanValue(getListingsCounter());
+            setListingsCounter(0);
+        }
+        else {
+            restartSearchAfterRequests();
         }
         ;
         return 'endSearch';
@@ -322,16 +333,19 @@ function clearInputFields() {
 const changeSearchMode = function () {
     const searchButtonElem = document.getElementById('bGoneSearchBarButton');
     const searchModeSelect = document.getElementById('bGoneSettingButton');
-    const quantityInput  = document.getElementById('bGoneQuantityInput');
-    if(searchButtonElem && searchModeSelect && quantityInput) {
-        if(searchModeSelect.value === 'Count listings') {
+    const quantityInput = document.getElementById('bGoneQuantityInput');
+    if (searchButtonElem && searchModeSelect && quantityInput) {
+        if (searchModeSelect.value === 'Count listings') {
             searchButtonElem.textContent = 'Count';
-            quantityInput.setAttribute('style', 'display: none')
-        } else {
+            quantityInput.setAttribute('style', 'display: none');
+        }
+        else {
             searchButtonElem.textContent = 'Remove';
             quantityInput.setAttribute('style', '');
-        };
-    };
+        }
+        ;
+    }
+    ;
 };
 function getNameInputValue() {
     const inputElem = document.getElementById('bGoneSearchBar');
@@ -424,7 +438,7 @@ function addExtensionElements() {
     searchBar.type = 'text';
     searchBar.id = 'bGoneSearchBar';
     searchBar.className = 'bGoneInputBar';
-    searchBar.placeholder = 'Enter the item you wish to remove';
+    searchBar.placeholder = 'Enter the full name of the item';
     searchBarContainer.append(searchBar);
     const searchBarButton = document.createElement('button');
     searchBarButton.id = 'bGoneSearchBarButton';
@@ -440,7 +454,7 @@ function addExtensionElements() {
     priceInputBar.type = 'text';
     priceInputBar.id = 'bGonePriceInputBar';
     priceInputBar.className = 'bGoneInputBar';
-    priceInputBar.placeholder = 'Enter the price of the items you want to remove';
+    priceInputBar.placeholder = 'Enter the price of the listings you want to match';
     priceInputBar.onkeydown = priceInputBarOnKeyDownEvt;
     priceInputBarContainer.append(priceInputBar);
     priceInputBarContainer.append(priceInputSelector);
@@ -472,12 +486,12 @@ function addExtensionElements() {
     quantityInputBar.onkeydown = quantityInputBarOnKeyDownEvt;
     quantityInputContainer.append(quantityInputBar);
     /*TESTING BUTTONNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN*/
-    let tstbutton = document.createElement('button');
+    /*let tstbutton = document.createElement('button');
     tstbutton.id = 'tstbutton';
     tstbutton.setAttribute('style', 'height: 5em; width: 5em;');
     tstbutton.textContent = 'CLICK ME SON!';
     tstbutton.addEventListener("click", () => {console.log("KACHOW")});
-    bGoneSearchBarContainer.append(tstbutton);
+    bGoneSearchBarContainer.append(tstbutton);*/
     const menuBoxContainer = document.createElement('div');
     menuBoxContainer.className = 'bGoneMiscContainer';
     bGoneSearchBarContainer.append(menuBoxContainer);
@@ -501,6 +515,9 @@ function addExtensionElements() {
     settingMenu.id = 'bGoneSettingButton';
     settingMenu.addEventListener('change', changeSearchMode);
     menuBoxContainer.append(settingMenu);
+    /*const settingMenuIcon : HTMLElement = document.createElement('img');
+    settingMenuIcon.id = chrome.runtime.getURL('images/combobox_setting_icon.png');
+    settingMenu.append(settingMenuIcon);*/
     const settingRemoveListing = document.createElement('option');
     settingRemoveListing.textContent = 'Remove listings';
     settingMenu.append(settingRemoveListing);
@@ -628,6 +645,7 @@ function removeItemListing(listingId, checkboxElement, countRemoval) {
             }
             ;
             let listingsNumber = getListingsAmount();
+            //Update the listing amount number on the page
             if (!isNaN(listingsNumber) && isFinite(listingsNumber)) {
                 listingsNumber = listingsNumber - 1;
                 let activeListings = document.getElementById('my_market_activelistings_number');
@@ -638,20 +656,14 @@ function removeItemListing(listingId, checkboxElement, countRemoval) {
                 resultsCount.innerHTML = listingsNumber.toString();
             }
             ;
-            const countVal = getListingsCounter();
-            if (countRemoval) {
-                if (Number.isNaN(countVal)) {
-                    setCountingSpanValue(0);
-                }
-                else {
-                    setListingsCounter(countVal + 1);
-                    setCountingSpanValue(countVal + 1);
-                }
-                ;
-            }
-            ;
+            //countRemoval is only false when deleting listings with the checkboxes
+            if (countRemoval)
+                setSuccessfulRequests(getSuccessfulRequests() + 1);
         }
         else {
+            //Here count failed listings
+            if (countRemoval)
+                setFailedRequests(getFailedRequests() + 1);
             console.log("Listing couldn't be removed.Error: " + httpRequest.status);
         }
         ;
@@ -695,6 +707,42 @@ function getListingsCounter() {
 ;
 function setListingsCounter(val) {
     listingsCounter = val;
+}
+;
+let successfulRequests = 0;
+function getSuccessfulRequests() {
+    return successfulRequests;
+}
+;
+function setSuccessfulRequests(val) {
+    successfulRequests = val;
+}
+;
+let failedRequests = 0;
+function getFailedRequests() {
+    return failedRequests;
+}
+;
+function setFailedRequests(val) {
+    failedRequests = val;
+}
+;
+function restartSearchAfterRequests() {
+    const intervalID = setInterval(() => {
+        if (listingsCounter === (getSuccessfulRequests() + getFailedRequests())) {
+            clearInterval(intervalID);
+            unlockInputs();
+            hideLoadingIcon();
+            setCountingSpanValue(getSuccessfulRequests());
+            getFailedRequests() === 0 ?
+                showPopUp('Removed ' + getSuccessfulRequests() + ' out of ' + getListingsCounter() + ' listings.') :
+                showPopUp('Removed ' + getSuccessfulRequests() + ' out of ' + getListingsCounter() + ' listings.\n' + getFailedRequests() + ' Listings could not be removed.');
+            setListingsCounter(0);
+            setSuccessfulRequests(0);
+            setFailedRequests(0);
+        }
+        ;
+    }, 500);
 }
 ;
 function getActiveListingPagingPage() {
