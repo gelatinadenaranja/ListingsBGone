@@ -4,14 +4,16 @@ Listings-B-Gone is a simple and light extension which only purpose is to make St
 
 ##### Characteristics
 
+ - Works with all steam market items
  - Easy to use
  - Faster than other methods
  - Executes on a single site
- - Free forever! (And you neither are nor will be the product)
- - Mozilla version soon (maybe :I )
+ - Free and no ads
 
 ##### Features
 
+ - Remove any amount listings fast
+ - Find out how many listings you have for an item
  - Search by name, price or both
  - Price search has 4 options:
    - Equal to the price you wrote.
@@ -22,9 +24,8 @@ Listings-B-Gone is a simple and light extension which only purpose is to make St
      - E.g: For 10, all items UNDER 10 are selected
    - Range to set the minimum and maximum price.
      - E.g: Writen like 10-12, all items OVER 10 and UNDER 12 are selected.
- - Quantity for matching listings
+ - Limit the quantity of matching listings you want to remove
  - Includes checkboxes for visible listings
 
 ##### License
-It is free software!  
-[Here is the code](https://github.com/gelatinadenaranja/ListingsBGone)
+[Here is the github repo](https://github.com/gelatinadenaranja/ListingsBGone)
