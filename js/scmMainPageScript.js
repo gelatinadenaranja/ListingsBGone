@@ -10,7 +10,6 @@ function parseMarketListingsData(data, startVal) {
         dataResultObj = jsonObj;
     }
     else {
-        //JSON was null
         alert("JSON was null, couldn't search listings");
         return;
     }
@@ -20,7 +19,6 @@ function parseMarketListingsData(data, startVal) {
         activeListingsTable.innerHTML = dataResultObj['results_html'];
         const querySelectorString = 'div > div#tabContentsMyActiveMarketListingsTable > div#tabContentsMyActiveMarketListingsRows';
         let listingsElement = activeListingsTable.querySelector(querySelectorString);
-        //Tidy up all this
         if (listingsElement) {
             listingRowElements = listingsElement.children;
         }
@@ -37,7 +35,6 @@ function parseMarketListingsData(data, startVal) {
         return;
     }
     ;
-    //Need: id, name, price
     let listingNameElem;
     let listingPriceElem;
     for (let i = 0; i < listingRowElements.length; i++) {
@@ -71,12 +68,10 @@ function searchMatchingListings(listingsData, startVal) {
     ;
     for (let i = 0; i < listingsData.length; i++) {
         if (checkName(name, listingsData[i].name) && checkPrice(price, Number.parseFloat(listingsData[i].price), priceSearchMode, maxPrice)) {
-            //console.log(listingsData[i].name + '   ' + listingsData[i].price + '   ' + listingsData[i].id);
             if (getSearchModeSelectorValue() == 'Remove listings') {
                 removeItemListing(listingsData[i].id, null, true);
             }
             ;
-            //This counts the amount of matching listings
             setListingsCounter(getListingsCounter() + 1);
             if (!Number.isNaN(matchingListingsQuantity) && getSearchModeSelectorValue() != 'Remove listings') {
                 if (matchingListingsQuantity > 1) {
@@ -97,17 +92,14 @@ function searchMatchingListings(listingsData, startVal) {
         let quantityInput = document.getElementById('bGoneQuantityInput');
         if (quantityInput)
             quantityInput.value = matchingListingsQuantity.toString();
-        //Update the amount of matching listings to be deleted.
     }
     ;
     startSearch(startVal);
 }
 ;
 const priceInputBarOnKeyDownEvt = function (event) {
-    //Only allow desired inputs in the text field.
     let selectorValue = getPriceModeSelectorValue();
     let validInputs = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'Backspace'];
-    //When selectorValue === 'Range' a '-' gets added because that's when a range is used in the search.
     if (selectorValue === 'Range') {
         validInputs.push('-');
         if (!validInputs.includes(event.key)) {
@@ -123,7 +115,6 @@ const priceInputBarOnKeyDownEvt = function (event) {
     }
 };
 const quantityInputBarOnKeyDownEvt = function (event) {
-    //Only allow desired inputs in the text field.
     let validInputs = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'Backspace'];
     if (!validInputs.includes(event.key)) {
         event.preventDefault();
@@ -131,8 +122,6 @@ const quantityInputBarOnKeyDownEvt = function (event) {
     ;
 };
 const removeCheckedItemsBtnEvt = function () {
-    /* Remove all listings where the checkbox elements in the 'tabContentsMyActiveMarketListingsRows'
-     * children are checked and the children are visible. Then if no listings are visible, refresh. */
     const listingContainer = document.getElementById('tabContentsMyActiveMarketListingsRows');
     const listingRowElements = listingContainer.children;
     const querySelectorString = 'div.market_listing_row.market_recent_listing_row > label.bGoneCheckboxContainer > input[type=checkbox].bGoneCheckbox:checked';
@@ -193,7 +182,6 @@ function unlockInputs() {
 }
 ;
 function selectAllCheckboxes() {
-    //Check all checkbox elements in the 'tabContentsMyActiveMarketListingsRows' children.
     const listingContainer = document.getElementById('tabContentsMyActiveMarketListingsRows');
     const selectAllCheckbox = document.getElementById('bGoneSelectAllCheckbox');
     if (!listingContainer || !selectAllCheckbox)
@@ -227,7 +215,7 @@ function selectAllCheckboxes() {
 function showInfoBox() {
     const loadingIconElem = getLoadingIconElem();
     const infoSpanElem = getInfoSpanElem();
-    const countingSpanElem = getCountingSpanElem(); //Prolly not using this
+    const countingSpanElem = getCountingSpanElem();
     if (infoSpanElem == null || loadingIconElem == null || countingSpanElem == null) {
         console.log('showInfoBox could not find one or more required elements.');
         return false;
@@ -252,7 +240,6 @@ function showInfoBox() {
 function startSearch(prevStartValue) {
     let nameInput = getNameInputValue();
     let priceInput = getPriceInputValue();
-    //Input fields check.
     if (nameInput === '' && priceInput === '') {
         alert("Can't perform search with both item name and price empty.");
         clearInputFields();
@@ -281,7 +268,6 @@ function startSearch(prevStartValue) {
         ;
     }
     ;
-    //Here starts the first iteration of the search.
     if (prevStartValue === undefined) {
         setCountingSpanValue(0);
         setListingsCounter(0);
@@ -291,20 +277,12 @@ function startSearch(prevStartValue) {
         return 'startedSearch';
     }
     ;
-    //Either continue or finish the search.
     let listingsAmount = getListingsAmount();
     if (prevStartValue !== undefined && listingsAmount > (prevStartValue + 100)) {
         getMarketListings(prevStartValue + 100, 100);
         return 'continueSearch';
     }
     else {
-        //console.log("Succesful requests: " + getSuccessfulRequests());
-        //console.log("Failed requests: " + getFailedRequests());
-        //Finished search. Straight up refresh the page for now.
-        //window.location.reload();
-        //refreshListings();
-        //----------------------TIS IS VERY IMPORTANT ADD FUNC FOR CHECKING IF LISTINGS REMOVALS FINISHED HERE THEN DO STUFF
-        //Do something like if RemoveMode trigger interval for waiting - ('member to reset all the used counters)
         if (getSearchModeSelectorValue() == 'Count listings') {
             unlockInputs();
             hideLoadingIcon();
@@ -410,7 +388,6 @@ function getCountingSpanValue() {
 ;
 function addExtensionElements() {
     const listingsContentTab = document.getElementById('tabContentsMyListings');
-    //Observer to check whenever tabContentsMyListings' child elements change.
     const listingsContentTabObserver = new MutationObserver(function (mutationList) {
         for (const mutation of mutationList) {
             if (mutation.type === 'childList') {
@@ -426,7 +403,6 @@ function addExtensionElements() {
     addSelectAllCheckBoxContainer();
     addListingCheckboxes();
     addListingsElementObserver();
-    //Add search elements
     const bGoneSearchBarContainer = document.createElement('div');
     bGoneSearchBarContainer.id = 'bGoneSearchBarContainer';
     const mainContentDiv = document.getElementById('mainContents');
@@ -459,19 +435,15 @@ function addExtensionElements() {
     priceInputBarContainer.append(priceInputBar);
     priceInputBarContainer.append(priceInputSelector);
     const priceInputEqual = document.createElement('option');
-    //priceInputEqual.value = 0;
     priceInputEqual.textContent = 'Equal to';
     priceInputSelector.append(priceInputEqual);
     const priceInputMoreThan = document.createElement('option');
-    //priceInputMoreThan.value = 1;
     priceInputMoreThan.textContent = 'More Than';
     priceInputSelector.append(priceInputMoreThan);
     const priceInputLessThan = document.createElement('option');
-    //priceInputLessThan.value = 2;
     priceInputLessThan.textContent = 'Less Than';
     priceInputSelector.append(priceInputLessThan);
     const priceInputRange = document.createElement('option');
-    //priceInputRange.value = 3;
     priceInputRange.textContent = 'Range';
     priceInputSelector.append(priceInputRange);
     const quantityInputContainer = document.createElement('div');
@@ -485,13 +457,6 @@ function addExtensionElements() {
     quantityInputBar.placeholder = 'Enter the quantity of matching listings you want to remove';
     quantityInputBar.onkeydown = quantityInputBarOnKeyDownEvt;
     quantityInputContainer.append(quantityInputBar);
-    /*TESTING BUTTONNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN*/
-    /*let tstbutton = document.createElement('button');
-    tstbutton.id = 'tstbutton';
-    tstbutton.setAttribute('style', 'height: 5em; width: 5em;');
-    tstbutton.textContent = 'CLICK ME SON!';
-    tstbutton.addEventListener("click", () => {console.log("KACHOW")});
-    bGoneSearchBarContainer.append(tstbutton);*/
     const menuBoxContainer = document.createElement('div');
     menuBoxContainer.className = 'bGoneMiscContainer';
     bGoneSearchBarContainer.append(menuBoxContainer);
@@ -515,9 +480,6 @@ function addExtensionElements() {
     settingMenu.id = 'bGoneSettingButton';
     settingMenu.addEventListener('change', changeSearchMode);
     menuBoxContainer.append(settingMenu);
-    /*const settingMenuIcon : HTMLElement = document.createElement('img');
-    settingMenuIcon.id = chrome.runtime.getURL('images/combobox_setting_icon.png');
-    settingMenu.append(settingMenuIcon);*/
     const settingRemoveListing = document.createElement('option');
     settingRemoveListing.textContent = 'Remove listings';
     settingMenu.append(settingRemoveListing);
@@ -527,7 +489,6 @@ function addExtensionElements() {
 }
 ;
 function addSelectAllCheckBoxContainer() {
-    //Add a div to manage the currently visible listings in the 'tabContentsMyActiveMarketListingsRows' element.
     const activeListingsTable = document.getElementById('tabContentsMyActiveMarketListingsTable');
     const selectAllCheckBoxContainer = document.createElement('div');
     selectAllCheckBoxContainer.id = 'bGoneSelectAllCheckBoxContainer';
@@ -563,14 +524,12 @@ function addSelectAllCheckBoxContainer() {
 }
 ;
 function addListingCheckboxes() {
-    //Add the checkbox elements to 'tabContentsMyActiveMarketListingsRows' children.
     const listingRow = document.getElementById('tabContentsMyActiveMarketListingsRows');
     const listingRowElements = listingRow.children;
     for (let i = 0; i < listingRowElements.length; i++) {
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.className = 'bGoneCheckbox';
-        //document.createTextNode(checkbox);
         const checkboxContainer = document.createElement('label');
         checkboxContainer.className = 'bGoneCheckboxContainer';
         checkboxContainer.append(checkbox);
@@ -580,10 +539,8 @@ function addListingCheckboxes() {
 }
 ;
 function addListingsElementObserver() {
-    //Observer to check whenever 'tabContentsMyActiveMarketListingsRows' changes, which is when the user selects another item page.
     const listingsContainer = document.getElementById('tabContentsMyActiveMarketListingsRows');
     const listingsContainerObserver = new MutationObserver(function (mutationList) {
-        //Observer to check whenever 'tabContentsMyActiveMarketListingsRows' changes, which is when the user selects another item page.
         for (const mutation of mutationList) {
             if (mutation.type === 'childList' && !wereCheckboxesAdded()) {
                 addListingCheckboxes();
@@ -603,7 +560,6 @@ function refreshListings() {
             let requestResult = httpRequest.responseText;
             const jsonObj = JSON.parse(requestResult);
             const dataResultObj = jsonObj;
-            //Fix mess later
             if (dataResultObj) {
                 let listingElements = document.createElement('div');
                 listingElements.innerHTML = dataResultObj['results_html'];
@@ -645,7 +601,6 @@ function removeItemListing(listingId, checkboxElement, countRemoval) {
             }
             ;
             let listingsNumber = getListingsAmount();
-            //Update the listing amount number on the page
             if (!isNaN(listingsNumber) && isFinite(listingsNumber)) {
                 listingsNumber = listingsNumber - 1;
                 let activeListings = document.getElementById('my_market_activelistings_number');
@@ -656,19 +611,16 @@ function removeItemListing(listingId, checkboxElement, countRemoval) {
                 resultsCount.innerHTML = listingsNumber.toString();
             }
             ;
-            //countRemoval is only false when deleting listings with the checkboxes
             if (countRemoval)
                 setSuccessfulRequests(getSuccessfulRequests() + 1);
         }
         else {
-            //Here count failed listings
             if (countRemoval)
                 setFailedRequests(getFailedRequests() + 1);
             console.log("Listing couldn't be removed.Error: " + httpRequest.status);
         }
         ;
     };
-    //Leave on false for consistency's sake NOT!
     httpRequest.open('POST', 'https://steamcommunity.com/market/removelisting/' + listingId, true);
     httpRequest.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     httpRequest.send('sessionid=' + getSessionIdCookie());
@@ -689,14 +641,12 @@ function getMarketListings(start, count) {
         }
         ;
     };
-    //Use: https://steamcommunity.com/market/mylistings/?query=&start=0&count=
     httpRequest.open('GET', 'https://steamcommunity.com/market/mylistings/?start=' + start + '&count=' + count, true);
     httpRequest.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     httpRequest.send();
 }
 ;
 window.addEventListener('load', function isListingsElementAvailable() {
-    //Check if there are active listings for the extension to work with.
     if (document.getElementById('tabContentsMyActiveMarketListingsRows'))
         addExtensionElements();
 });
@@ -785,7 +735,6 @@ function getRawPrice(price) {
 }
 ;
 function getItemId(listingElementId) {
-    //Function input example: 'mylisting_4060547854836020987'
     if (!listingElementId) {
         console.log('getItemId() got a falsy value for an ID : ' + listingElementId);
         return '';
@@ -854,7 +803,6 @@ function showPopUp(message) {
 }
 ;
 function checkQuantityInput() {
-    //Validation for 'bGoneQuantityInput' element input.
     const element = document.getElementById('bGoneQuantityInput');
     if (element.value === '') {
         return true;
@@ -872,7 +820,6 @@ function checkQuantityInput() {
 }
 ;
 function checkPriceInput() {
-    //Validation for 'bGonePriceInputBar' element input.
     const element = document.getElementById('bGonePriceInputBar');
     if (element.value === '') {
         return true;
@@ -881,7 +828,6 @@ function checkPriceInput() {
     const selectorValue = getPriceModeSelectorValue();
     let value;
     if (selectorValue !== 'Range') {
-        //In case the range option isn't used.
         value = Number.parseFloat(removeCommas(element.value));
         if (!Number.isNaN(value) && value > 0) {
             element.value = value.toString();
@@ -894,16 +840,14 @@ function checkPriceInput() {
         ;
     }
     else {
-        //In case the range option is used.
         let fullRangeValues = element.value;
         let rangeValues;
         rangeValues = fullRangeValues.split('-');
-        if (rangeValues.length !== 2) { //ADD CHECK FOR ARRAY DATATYPE
+        if (rangeValues.length !== 2) {
             element.value = '';
             return false;
         }
         ;
-        //Check each array element individually.
         for (let index = 0; index < 2; index++) {
             rangeValues[index] = removeCommas(rangeValues[index]);
             for (let i = 0; i < rangeValues[index].length; i++) {
@@ -916,12 +860,10 @@ function checkPriceInput() {
             ;
         }
         ;
-        //Can't have a range with two equal values.
         if (Number.parseFloat(rangeValues[0]) === Number.parseFloat(rangeValues[1])) {
             return false;
         }
         ;
-        //Sorting range values acordingly (Min value-Max value).
         if (Number.parseFloat(rangeValues[0]) > Number.parseFloat(rangeValues[1])) {
             let maxValue = Number.parseFloat(rangeValues[0]);
             rangeValues[0] = rangeValues[1];
@@ -935,7 +877,6 @@ function checkPriceInput() {
 }
 ;
 function wereCheckboxesAdded() {
-    //Check if the checkbox elements were added to the 'tabContentsMyActiveMarketListingsRows' children already.
     const listingsContainer = document.getElementById('tabContentsMyActiveMarketListingsRows');
     let listingElement;
     let elementFirstChild = document.createElement('div');
@@ -962,12 +903,6 @@ function checkName(nameParam, itemName) {
 function checkPrice(priceParam, price, mode, maxPrice) {
     if (Number.isNaN(priceParam))
         return true;
-    /*
-    0 - Equal to
-    1 - More than
-    2 - Less than
-    3 - Range
-    */ //Check this function out, don't think it makes sense
     switch (mode) {
         case 'Equal to':
             return priceParam === price;
