@@ -1,8 +1,8 @@
-import { getItemId, getRawPrice, ListingDataObject, setListingsCounter, getListingsCounter } from './utils';
+import { getItemId, getRawPrice, ListingDataObject, setListingsCounter, getListingsCounter, getSuccessfulRequests, setFailedRequests, showPopUp, setCountingSpanValue, hideLoadingIcon, setSuccessfulRequests } from './utils';
 import { getNameInputValue, getPriceInputValue, getPriceModeSelectorValue, getQuantityInputValue, getListingsAmount, getSearchModeSelectorValue } from './elementGetters';
 import { removeItemListing } from './httpRequestFuncs';
 import { checkName, checkPrice } from './validationFuncs';
-import { startSearch } from './elementEvents';
+import { startSearch, unlockInputs } from './elementEvents';
 
 export function parseMarketListingsData(data : string, startVal : number) {
     let listingRowElements : HTMLCollection | undefined;
@@ -37,8 +37,21 @@ export function parseMarketListingsData(data : string, startVal : number) {
     };
 
     if(listingRowElements === undefined) {
-        console.log("listingRowElements = undefined ")
-        console.log(listingRowElements);
+        console.log("listingRowElements = " + listingRowElements);
+        //Abort search and restart everything
+        if(getSuccessfulRequests() === 0 || getSearchModeSelectorValue() === 'Count listings') {
+            showPopUp('Could not get listings data, task has been aborted.');
+        } else {
+            showPopUp('Failed to get remaining listings data, aborting task.\n' + getSuccessfulRequests() + ' Listings have been removed');
+            setCountingSpanValue(getSuccessfulRequests());
+        };
+        
+        unlockInputs();
+        hideLoadingIcon();
+        setListingsCounter(0);
+        setSuccessfulRequests(0)
+        setFailedRequests(0);
+        
         return;
     };
 
@@ -87,7 +100,7 @@ export function searchMatchingListings(listingsData : ListingDataObject[], start
             //This counts the amount of matching listings
             setListingsCounter(getListingsCounter() + 1);
 
-            if(!Number.isNaN(matchingListingsQuantity) && getSearchModeSelectorValue() != 'Remove listings') {
+            if(!Number.isNaN(matchingListingsQuantity) && getSearchModeSelectorValue() === 'Remove listings') {
                 if(matchingListingsQuantity > 1) {
                     matchingListingsQuantity--;
                 } else {
