@@ -47,7 +47,7 @@ export function checkPriceInput() : boolean {
         let rangeValues : string[];
 
         rangeValues = fullRangeValues.split('-');
-        if(rangeValues.length !== 2) { //ADD CHECK FOR ARRAY DATATYPE
+        if(rangeValues.length !== 2 || rangeValues === null) {
             element.value = '';
             return false;
         };
@@ -115,7 +115,8 @@ export function checkPrice(priceParam : number, price : number, mode : string, m
     1 - More than
     2 - Less than
     3 - Range
-    *///Check this function out, don't think it makes sense
+    */
+   //priceParam === #bGonePriceInputBar's value
     switch (mode) {
         case 'Equal to':
             return priceParam === price;
@@ -124,7 +125,7 @@ export function checkPrice(priceParam : number, price : number, mode : string, m
         case 'Less Than':
             return priceParam > price;
         case 'Range':
-            return (priceParam < price) && (price < maxPrice);
+            return (priceParam <= price) && (price <= maxPrice);
         default:
             console.log('Using default price search mode for some reason.');
             return price === priceParam;

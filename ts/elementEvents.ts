@@ -176,7 +176,7 @@ export function startSearch(prevStartValue : number | undefined) : string {
             let priceSearchMode = getPriceModeSelectorValue();
 
             if(priceSearchMode === 'Range') {
-                alert('Input price range is not valid.\nFirst write the minimum value, then a dash (-) and then the maximum value.\nExample: 1.05-3');
+                alert('Input price range is not valid.\nFirst write the minimum value, then a dash (-) and then the maximum value.\nEqual values are not accepted.\nExample: 1.05-3');
                 return 'invalidRange';
             } else {
                 alert('Input price is not valid.\nOnly values over 0 are accepted.\nExample: 100.25');
