@@ -22,12 +22,12 @@ export function checkQuantityInput() : boolean {
 export function checkPriceInput() : boolean {
     //Validation for 'bGonePriceInputBar' element input.
     const element : HTMLInputElement = <HTMLInputElement> document.getElementById('bGonePriceInputBar');
+    const selectorValue : string = getPriceModeSelectorValue();
 
-    if(element.value === '') {
+    if(element.value === '' && selectorValue !== 'Range') {
         return true;
     };
-
-    const selectorValue : string = getPriceModeSelectorValue();
+    
     let value : number;
 
     if(selectorValue !== 'Range') {
